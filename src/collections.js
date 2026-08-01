@@ -3,7 +3,7 @@ export const COLLECTIONS = [
   {
     key: 'specialities',
     label: 'Specialities',
-    icon: '🩺',
+    icon: 'stethoscope',
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true },
@@ -17,7 +17,7 @@ export const COLLECTIONS = [
   {
     key: 'locations',
     label: 'Locations',
-    icon: '🏥',
+    icon: 'building',
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Hospital name', type: 'text', required: true },
@@ -35,7 +35,7 @@ export const COLLECTIONS = [
   {
     key: 'doctors',
     label: 'Doctors',
-    icon: '👩‍⚕️',
+    icon: 'doctor',
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true },
@@ -51,7 +51,7 @@ export const COLLECTIONS = [
   {
     key: 'testimonials',
     label: 'Testimonials',
-    icon: '💬',
+    icon: 'chat',
     titleField: 'patientName',
     fields: [
       { name: 'patientName', label: 'Patient name', type: 'text', required: true },
@@ -65,7 +65,7 @@ export const COLLECTIONS = [
   {
     key: 'news',
     label: 'News & Events',
-    icon: '📰',
+    icon: 'news',
     titleField: 'title',
     fields: [
       { name: 'title', label: 'Title', type: 'text', required: true },
@@ -80,7 +80,7 @@ export const COLLECTIONS = [
   {
     key: 'procedures',
     label: 'Procedures',
-    icon: '⚕️',
+    icon: 'activity',
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true },
