@@ -1,5 +1,34 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
+
+// Shared cache of location names for the "Location" dropdowns.
+let locationsCache = null;
+function useLocationNames() {
+  const [names, setNames] = useState(locationsCache || []);
+  useEffect(() => {
+    if (locationsCache) return;
+    api('/api/locations/all')
+      .catch(() => api('/api/locations'))
+      .then((list) => {
+        locationsCache = list.map((l) => l.name);
+        setNames(locationsCache);
+      })
+      .catch(() => {});
+  }, []);
+  return names;
+}
+
+// "" = shown for all centres; a name = only that hospital's page.
+export function LocationField({ value, onChange }) {
+  const names = useLocationNames();
+  return (
+    <select value={value || ''} onChange={(e) => onChange(e.target.value)}>
+      <option value="">All centres (entire website)</option>
+      {names.map((n) => <option key={n} value={n}>{n}</option>)}
+      {value && !names.includes(value) && <option value={value}>{value}</option>}
+    </select>
+  );
+}
 
 // Uploads an image to /api/media and stores the returned URL.
 export function ImageField({ value, onChange, folder = 'general' }) {
@@ -82,6 +111,8 @@ export function Field({ field, value, onChange, folder }) {
       );
     case 'image':
       return <ImageField value={v} onChange={onChange} folder={folder} />;
+    case 'location':
+      return <LocationField value={v} onChange={onChange} />;
     default:
       return <input type="text" value={v} onChange={(e) => onChange(e.target.value)} />;
   }
