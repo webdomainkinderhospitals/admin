@@ -21,6 +21,11 @@ export const COLLECTIONS = [
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Hospital name', type: 'text', required: true },
+      { name: 'slug', label: 'Page URL name (e.g. "kochi" → yoursite.com/hospitals/kochi)', type: 'text' },
+      { name: 'tagline', label: 'Page tagline (short sentence under the name)', type: 'text' },
+      { name: 'description', label: 'About this hospital (shown on its page)', type: 'textarea', rows: 5 },
+      { name: 'highlights', label: 'Highlights — one per line (e.g. "Level III NICU")', type: 'textarea', rows: 6 },
+      { name: 'heroImageUrl', label: 'Page banner image', type: 'image' },
       { name: 'city', label: 'City', type: 'text' },
       { name: 'country', label: 'Country', type: 'text' },
       { name: 'address', label: 'Address', type: 'textarea' },
