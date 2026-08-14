@@ -23,9 +23,14 @@ export function CollectionManager({ config }) {
   }
   useEffect(() => {
     setItems(null);
-    setEditing(null);
     setQuery('');
     setError('');
+    if (window.__kinderQuickAdd) {
+      window.__kinderQuickAdd = false;
+      setEditing(blank());
+    } else {
+      setEditing(null);
+    }
     load();
   }, [config.key]);
 

@@ -3,17 +3,32 @@ import { api } from '../api.js';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
 
-const FOLDERS = ['general', 'hero', 'doctors', 'locations', 'specialities', 'news', 'testimonials', 'procedures'];
+// Media is organised into three groups: corporate-site imagery, content-type
+// folders, and one folder per hospital. Hospital folders load from the real
+// Locations list, so new centres get a folder automatically.
+const CORPORATE_FOLDERS = ['corporate', 'hero', 'general'];
+const CONTENT_FOLDERS = ['doctors', 'locations', 'specialities', 'news', 'testimonials', 'procedures'];
+
+const slugify = (name) =>
+  String(name || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 export function MediaLibrary() {
   const [items, setItems] = useState(null);
   const [folder, setFolder] = useState('');
-  const [uploadFolder, setUploadFolder] = useState('general');
+  const [uploadFolder, setUploadFolder] = useState('corporate');
+  const [hospitalFolders, setHospitalFolders] = useState([]);
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(0);
   const inputRef = useRef();
+
+  useEffect(() => {
+    api('/api/locations/all')
+      .catch(() => api('/api/locations'))
+      .then((list) => setHospitalFolders(list.map((l) => ({ folder: slugify(l.slug || l.name), name: l.name }))))
+      .catch(() => {});
+  }, []);
 
   async function load(f = folder) {
     try {
@@ -36,7 +51,7 @@ export function MediaLibrary() {
         await api('/api/media', { method: 'POST', formData: fd });
       }
       await load();
-      toast(`${files.length} image${files.length > 1 ? 's' : ''} uploaded`);
+      toast(`${files.length} image${files.length > 1 ? 's' : ''} uploaded to “${uploadFolder}”`);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -61,23 +76,39 @@ export function MediaLibrary() {
     setTimeout(() => setCopied(0), 1500);
   }
 
+  const groups = [
+    { title: 'Corporate website', folders: CORPORATE_FOLDERS.map((f) => ({ folder: f, name: f })) },
+    { title: 'Website content', folders: CONTENT_FOLDERS.map((f) => ({ folder: f, name: f })) },
+    ...(hospitalFolders.length
+      ? [{ title: 'Hospitals', folders: hospitalFolders.map((h) => ({ folder: h.folder, name: h.name })) }]
+      : []),
+  ];
+
   return (
     <div className="page">
       <div className="page-head">
-        <div className="folder-tabs" role="tablist" aria-label="Filter by folder">
-          <button className={folder === '' ? 'active' : ''} onClick={() => setFolder('')}>All</button>
-          {FOLDERS.map((f) => (
-            <button key={f} className={folder === f ? 'active' : ''} onClick={() => setFolder(f)}>{f}</button>
-          ))}
+        <div className="media-filter">
+          <button className={`folder-pill${folder === '' ? ' active' : ''}`} onClick={() => setFolder('')}>
+            All images
+          </button>
         </div>
         <div className="upload-controls">
-          <select
-            value={uploadFolder}
-            onChange={(e) => setUploadFolder(e.target.value)}
-            aria-label="Upload into folder"
-          >
-            {FOLDERS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
+          <label className="upload-dest">
+            <span>Upload to</span>
+            <select value={uploadFolder} onChange={(e) => setUploadFolder(e.target.value)} aria-label="Upload destination">
+              <optgroup label="Corporate website">
+                {CORPORATE_FOLDERS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </optgroup>
+              <optgroup label="Website content">
+                {CONTENT_FOLDERS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </optgroup>
+              {hospitalFolders.length > 0 && (
+                <optgroup label="Hospitals">
+                  {hospitalFolders.map((h) => <option key={h.folder} value={h.folder}>Kinder {h.name}</option>)}
+                </optgroup>
+              )}
+            </select>
+          </label>
           <button className="btn btn-primary" disabled={busy} onClick={() => inputRef.current.click()}>
             {busy ? <span className="spinner" aria-hidden="true"></span> : <Icon name="upload" size={16} />}
             {busy ? 'Uploading…' : 'Upload'}
@@ -89,6 +120,25 @@ export function MediaLibrary() {
         </div>
       </div>
       {error && <div className="error-banner" role="alert"><Icon name="alert" size={16} /> {error}</div>}
+
+      <div className="folder-groups">
+        {groups.map((group) => (
+          <div className="folder-group" key={group.title}>
+            <span className="folder-group-title">{group.title}</span>
+            <div className="folder-tabs">
+              {group.folders.map((f) => (
+                <button
+                  key={f.folder}
+                  className={folder === f.folder ? 'active' : ''}
+                  onClick={() => setFolder(f.folder)}
+                >
+                  {f.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div
         className={`dropzone${dragOver ? ' drag-over' : ''}`}
@@ -119,7 +169,9 @@ export function MediaLibrary() {
         <div className="media-grid">
           {items.map((item) => (
             <div className="media-card" key={item.id}>
-              <img src={item.url} alt={item.fileName} loading="lazy" />
+              <a href={item.url} target="_blank" rel="noopener" title="Open full size">
+                <img src={item.url} alt={item.fileName} loading="lazy" />
+              </a>
               <div className="media-meta">
                 <span className="muted small">{item.folder} · {(item.sizeBytes / 1024).toFixed(0)} KB</span>
                 <div className="media-actions">
