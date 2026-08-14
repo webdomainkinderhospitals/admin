@@ -94,19 +94,40 @@ function initials(user) {
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
 
+const byKey = Object.fromEntries(COLLECTIONS.map((c) => [c.key, c]));
+const navItem = (key) => ({ key, label: byKey[key].label, icon: byKey[key].icon });
+
 const NAV_GROUPS = [
   {
     title: 'Overview',
     items: [
       { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { key: 'settings', label: 'Site Settings', icon: 'settings' },
       { key: 'media', label: 'Media Library', icon: 'image' },
     ],
   },
   {
-    title: 'Website Content',
-    items: COLLECTIONS.map((c) => ({ key: c.key, label: c.label, icon: c.icon })),
+    title: 'Corporate Website',
+    items: [
+      { key: 'settings', label: 'Site Settings', icon: 'settings' },
+      navItem('specialities'),
+      navItem('procedures'),
+      navItem('news'),
+      navItem('testimonials'),
+    ],
   },
+  {
+    title: 'Hospitals',
+    items: [navItem('locations'), navItem('doctors')],
+  },
+];
+
+const QUICK_ADDS = [
+  { key: 'doctors', label: 'Add doctor', icon: 'doctor', openForm: true },
+  { key: 'news', label: 'Post news / event', icon: 'news', openForm: true },
+  { key: 'testimonials', label: 'Add testimonial', icon: 'chat', openForm: true },
+  { key: 'procedures', label: 'Add procedure', icon: 'activity', openForm: true },
+  { key: 'media', label: 'Upload images', icon: 'upload' },
+  { key: 'settings', label: 'Edit hero & settings', icon: 'spark' },
 ];
 
 const TITLES = Object.fromEntries(
@@ -117,6 +138,13 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [checked, setChecked] = useState(false);
   const [page, setPage] = useState('dashboard');
+  const [quickOpen, setQuickOpen] = useState(false);
+
+  function quickAdd(item) {
+    setQuickOpen(false);
+    if (item.openForm) window.__kinderQuickAdd = true;
+    setPage(item.key);
+  }
 
   useEffect(() => {
     const logout = () => setUser(null);
@@ -184,6 +212,23 @@ export default function App() {
         <header className="topbar">
           <h1 className="topbar-title">{TITLES[page] || 'Dashboard'}</h1>
           <div className="topbar-actions">
+            <div className="quick-add-wrap">
+              <button className="btn btn-primary" onClick={() => setQuickOpen((v) => !v)} aria-expanded={quickOpen}>
+                <Icon name="plus" size={16} /> Quick add
+              </button>
+              {quickOpen && (
+                <>
+                  <div className="quick-add-backdrop" onClick={() => setQuickOpen(false)}></div>
+                  <div className="quick-add-menu" role="menu">
+                    {QUICK_ADDS.map((item) => (
+                      <button key={item.key + item.label} role="menuitem" onClick={() => quickAdd(item)}>
+                        <Icon name={item.icon} size={16} /> {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             {SITE_URL && (
               <a className="btn btn-ghost" href={SITE_URL} target="_blank" rel="noopener">
                 <Icon name="external" size={16} /> View website
