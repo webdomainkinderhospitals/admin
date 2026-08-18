@@ -18,7 +18,10 @@ export async function api(path, { method = 'GET', body, formData } = {}) {
     headers,
     body: formData ? formData : body ? JSON.stringify(body) : undefined,
   });
-  if (res.status === 401) {
+  // A 401 means an expired session — except during sign-in itself, where it
+  // simply means the email or password was wrong.
+  const authAttempt = path.startsWith('/api/auth/login') || path.startsWith('/api/auth/change-password');
+  if (res.status === 401 && !authAttempt) {
     setToken('');
     window.dispatchEvent(new Event('kinder-logout'));
     throw new Error('Session expired — please log in again');
