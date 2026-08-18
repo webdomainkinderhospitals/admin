@@ -7,6 +7,19 @@ export const COLLECTIONS = [
     titleField: 'name',
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true },
+      {
+        name: 'category',
+        label: 'Service group (section on the corporate Services page & menu)',
+        type: 'select',
+        default: '',
+        options: [
+          { value: '', label: '— No group (hospital-only speciality) —' },
+          'Maternity & Pregnancy',
+          'Fertility & Gynaecology',
+          "Children's Care",
+          'Allied & Wellness',
+        ],
+      },
       { name: 'description', label: 'Description', type: 'textarea' },
       { name: 'icon', label: 'Icon (emoji)', type: 'text' },
       { name: 'imageUrl', label: 'Image', type: 'image' },
@@ -50,7 +63,7 @@ export const COLLECTIONS = [
     fields: [
       { name: 'name', label: 'Name', type: 'text', required: true },
       { name: 'designation', label: 'Designation', type: 'text' },
-      { name: 'speciality', label: 'Speciality', type: 'text' },
+      { name: 'speciality', label: 'Speciality', type: 'speciality' },
       { name: 'location', label: 'Location (which hospital this doctor appears on)', type: 'location' },
       { name: 'bio', label: 'Short bio', type: 'textarea' },
       { name: 'imageUrl', label: 'Photo', type: 'image' },

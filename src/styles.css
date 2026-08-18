@@ -646,3 +646,46 @@ input:focus, textarea:focus, select:focus {
   .folder-group { flex-direction: column; gap: 6px; }
   .folder-group-title { min-width: 0; }
 }
+
+/* ---- Services & Doctors manager ---- */
+.sd-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.sd-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line, #e3e8ef); background: var(--white, #fff);
+  font: inherit; font-size: 13.5px; font-weight: 600; color: inherit;
+  transition: all .2s;
+}
+.sd-tab:hover { border-color: var(--primary, #1367af); color: var(--primary, #1367af); }
+.sd-tab.active { background: var(--primary, #1367af); border-color: var(--primary, #1367af); color: #fff; }
+.sd-hint { margin: 0 0 16px; font-size: 13.5px; }
+.sd-group { padding: 20px 22px; margin-bottom: 18px; }
+.sd-group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.sd-group-head h2 { font-size: 16px; margin: 0; }
+.sd-empty { padding: 10px 0; font-size: 13.5px; }
+.sd-spec { border-top: 1px solid var(--line, #e3e8ef); padding: 14px 0; }
+.sd-spec:first-of-type { border-top: none; }
+.sd-spec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sd-spec-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sd-spec-title strong { font-size: 14.5px; }
+.sd-spec-actions { display: flex; gap: 6px; }
+.sd-doctors { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 12px; }
+.sd-doctor {
+  display: flex; align-items: center; gap: 12px; position: relative;
+  border: 1px solid var(--line, #e3e8ef); border-radius: 12px;
+  padding: 10px 12px; background: var(--bg, #f7f9fc); flex-wrap: wrap;
+}
+.sd-doctor > img, .sd-doctor-noimg {
+  width: 46px; height: 46px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+  background: var(--primary-light, #e5f0fa); display: grid; place-items: center;
+  color: var(--primary, #1367af);
+}
+.sd-doctor-meta { flex: 1; min-width: 0; }
+.sd-doctor-meta strong { display: block; font-size: 13.5px; }
+.sd-doctor-actions { display: flex; gap: 5px; }
+.sd-doctor-editwrap, .sd-doc-form { flex-basis: 100%; }
+.sd-doc-form {
+  border: 1px dashed var(--primary, #1367af); border-radius: 12px;
+  padding: 16px; margin: 12px 0 4px; background: var(--primary-light, #f2f8fd);
+}
+.sd-doc-form .form-actions { margin-top: 10px; }
