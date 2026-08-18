@@ -23,6 +23,58 @@ const SECTIONS = [
   },
 ];
 
+function ChangePasswordCard() {
+  const [currentPassword, setCurrent] = useState('');
+  const [newPassword, setNew] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    if (newPassword.length < 8) { setError('New password must be at least 8 characters'); return; }
+    if (newPassword !== confirm) { setError('New passwords do not match'); return; }
+    setBusy(true);
+    try {
+      await api('/api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } });
+      setCurrent(''); setNew(''); setConfirm('');
+      toast('Password changed — use it next time you sign in');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="card form-card" onSubmit={submit}>
+      <h2>Change admin password</h2>
+      <p className="muted card-hint">Updates the password for your admin account. Minimum 8 characters.</p>
+      <div className="form-grid">
+        <div className="form-row">
+          <label>Current password</label>
+          <input type="password" autoComplete="current-password" value={currentPassword} onChange={(e) => setCurrent(e.target.value)} required />
+        </div>
+        <div className="form-row">
+          <label>New password</label>
+          <input type="password" autoComplete="new-password" value={newPassword} onChange={(e) => setNew(e.target.value)} required />
+        </div>
+        <div className="form-row">
+          <label>Confirm new password</label>
+          <input type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+        </div>
+      </div>
+      {error && <div className="error-text" role="alert"><Icon name="alert" size={14} /> {error}</div>}
+      <div className="form-actions">
+        <button className="btn btn-primary" disabled={busy}>
+          {busy ? 'Changing…' : 'Change password'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function SettingsPage() {
   const [settings, setSettings] = useState(null);
   const [stats, setStats] = useState([]);
@@ -126,6 +178,8 @@ export function SettingsPage() {
           </button>
         </div>
       </form>
+
+      <ChangePasswordCard />
     </div>
   );
 }
