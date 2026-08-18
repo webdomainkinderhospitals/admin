@@ -30,6 +30,44 @@ export function LocationField({ value, onChange }) {
   );
 }
 
+// Shared cache of speciality names for the doctor "Speciality" dropdown.
+let specialitiesCache = null;
+export function useSpecialityNames() {
+  const [names, setNames] = useState(specialitiesCache || []);
+  useEffect(() => {
+    if (specialitiesCache) return;
+    api('/api/specialities/all')
+      .catch(() => api('/api/specialities'))
+      .then((list) => {
+        specialitiesCache = [...new Set(list.map((s) => s.name))];
+        setNames(specialitiesCache);
+      })
+      .catch(() => {});
+  }, []);
+  return names;
+}
+export function clearSpecialityCache() { specialitiesCache = null; }
+
+// Doctors pick their speciality from the Specialities list (typing still
+// allowed via the datalist, so a one-off speciality never blocks saving).
+export function SpecialityField({ value, onChange }) {
+  const names = useSpecialityNames();
+  return (
+    <>
+      <input
+        type="text"
+        list="speciality-options"
+        value={value || ''}
+        placeholder="Choose or type a speciality…"
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <datalist id="speciality-options">
+        {names.map((n) => <option key={n} value={n} />)}
+      </datalist>
+    </>
+  );
+}
+
 // Uploads an image to /api/media and stores the returned URL.
 export function ImageField({ value, onChange, folder = 'general' }) {
   const inputRef = useRef();
@@ -103,16 +141,20 @@ export function Field({ field, value, onChange, folder }) {
       const d = v ? String(v).slice(0, 10) : '';
       return <input type="date" value={d} onChange={(e) => onChange(e.target.value)} />;
     }
-    case 'select':
+    case 'select': {
+      const opts = field.options.map((o) => (typeof o === 'string' ? { value: o, label: o } : o));
       return (
-        <select value={v || field.options[0]} onChange={(e) => onChange(e.target.value)}>
-          {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
+        <select value={v ?? opts[0].value} onChange={(e) => onChange(e.target.value)}>
+          {opts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       );
+    }
     case 'image':
       return <ImageField value={v} onChange={onChange} folder={folder} />;
     case 'location':
       return <LocationField value={v} onChange={onChange} />;
+    case 'speciality':
+      return <SpecialityField value={v} onChange={onChange} />;
     default:
       return <input type="text" value={v} onChange={(e) => onChange(e.target.value)} />;
   }
