@@ -6,6 +6,7 @@ import { MediaLibrary } from './pages/MediaLibrary.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { ServicesDoctors } from './pages/ServicesDoctors.jsx';
+import { HospitalsManager } from './pages/HospitalsManager.jsx';
 import { Icon } from './icons.jsx';
 import { ToastHost } from './toast.jsx';
 
@@ -119,7 +120,10 @@ const NAV_GROUPS = [
   },
   {
     title: 'Hospitals',
-    items: [navItem('locations'), navItem('doctors')],
+    items: [
+      { key: 'hospitals', label: 'Hospitals', icon: 'building' },
+      navItem('doctors'),
+    ],
   },
 ];
 
@@ -247,6 +251,7 @@ export default function App() {
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary />}
           {page === 'services-doctors' && <ServicesDoctors />}
+          {page === 'hospitals' && <HospitalsManager />}
           {COLLECTIONS.map((c) => page === c.key && <CollectionManager key={c.key} config={c} />)}
         </main>
       </div>
