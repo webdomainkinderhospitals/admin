@@ -53,6 +53,20 @@ export function CollectionManager({ config }) {
     }
   }
 
+  async function togglePublish(item) {
+    const next = !(item.published !== false);
+    setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: next } : x)));
+    try {
+      const body = { ...item, published: next };
+      delete body.id;
+      await api(`/api/${config.key}/${item.id}`, { method: 'PUT', body });
+      toast(next ? 'Now live on the website' : 'Hidden from the website');
+    } catch (e) {
+      setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: !next } : x)));
+      setError(e.message);
+    }
+  }
+
   async function remove(item) {
     if (!confirm(`Delete "${item[config.titleField]}"? This cannot be undone.`)) return;
     try {
@@ -176,9 +190,17 @@ export function CollectionManager({ config }) {
                     </div>
                   </td>
                   <td>
-                    {item.published === false
-                      ? <span className="badge badge-draft">Draft</span>
-                      : <span className="badge badge-live">Live</span>}
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={item.published !== false}
+                      aria-label={`Toggle "${item[config.titleField]}" visibility on the website`}
+                      className={`switch switch-compact${item.published !== false ? ' on' : ''}`}
+                      onClick={() => togglePublish(item)}
+                    >
+                      <span className="switch-track" aria-hidden="true"><span className="switch-thumb"></span></span>
+                      <span className="switch-text">{item.published !== false ? 'Live' : 'Hidden'}</span>
+                    </button>
                   </td>
                   <td className="actions-cell">
                     <button className="btn btn-small" onClick={() => setEditing(item)}>

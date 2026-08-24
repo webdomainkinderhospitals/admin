@@ -689,3 +689,69 @@ input:focus, textarea:focus, select:focus {
   padding: 16px; margin: 12px 0 4px; background: var(--primary-light, #f2f8fd);
 }
 .sd-doc-form .form-actions { margin-top: 10px; }
+
+/* ---- Visibility switch ---- */
+.switch {
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 4px 6px 4px 4px;
+  background: none; border: none; cursor: pointer;
+  font: inherit; font-size: 13.5px; font-weight: 600; color: inherit;
+  border-radius: 999px;
+}
+.switch:disabled { cursor: wait; opacity: .6; }
+.switch-track {
+  width: 46px; height: 26px; border-radius: 999px; flex-shrink: 0;
+  background: #cbd5e1; position: relative;
+  transition: background .2s ease;
+}
+.switch-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(15, 23, 42, .35);
+  transition: transform .2s cubic-bezier(.34, 1.4, .64, 1);
+}
+.switch.on .switch-track { background: var(--green, #16a34a); }
+.switch.on .switch-thumb { transform: translateX(20px); }
+.switch .switch-text { color: var(--muted, #64748b); }
+.switch.on .switch-text { color: var(--green, #16a34a); }
+.switch:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(19, 103, 175, .35); }
+.switch-compact { min-height: 36px; }
+.switch-compact .switch-track { width: 38px; height: 22px; }
+.switch-compact .switch-thumb { width: 16px; height: 16px; }
+.switch-compact.on .switch-thumb { transform: translateX(16px); }
+
+/* ---- Hospitals manager ---- */
+.hosp-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; padding: 20px 22px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.hosp-head h2 { margin: 0 0 4px; font-size: 18px; }
+.hosp-head .muted { margin: 0 0 2px; }
+.hosp-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+.hosp-card { padding: 0; overflow: hidden; display: flex; flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .25s ease; }
+.hosp-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -18px rgba(15, 23, 42, .35); }
+.hosp-card.is-off .hosp-card-img { filter: grayscale(.85); opacity: .75; }
+.hosp-card-img {
+  aspect-ratio: 16 / 8; background-size: cover; background-position: center;
+  background-color: #e5eef7;
+  background-image: linear-gradient(135deg, #e5eef7, #f6e7ee);
+  position: relative;
+}
+.hosp-off-badge, .hosp-intl-badge {
+  position: absolute; top: 10px; display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+}
+.hosp-off-badge { left: 10px; background: rgba(15, 23, 42, .78); color: #fff; }
+.hosp-intl-badge { right: 10px; background: rgba(255, 255, 255, .92); color: #7c3aed; }
+.hosp-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.hosp-card-title h3 { margin: 0; font-size: 15.5px; }
+.hosp-card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .switch-track, .switch-thumb, .hosp-card { transition: none; }
+  .hosp-card:hover { transform: none; }
+}
