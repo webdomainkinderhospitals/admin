@@ -63,8 +63,12 @@ function DoctorForm({ initial, onSaved, onCancel }) {
           <ImageField value={doc.imageUrl} onChange={set('imageUrl')} folder="doctors" />
         </div>
         <div className="form-row form-row-wide">
-          <label>Short bio</label>
+          <label>Short bio (shown on cards)</label>
           <textarea rows={2} value={doc.bio || ''} onChange={(e) => set('bio')(e.target.value)} />
+        </div>
+        <div className="form-row form-row-wide">
+          <label>Full bio (shown on the doctor's profile page)</label>
+          <textarea rows={5} value={doc.fullBio || ''} onChange={(e) => set('fullBio')(e.target.value)} />
         </div>
       </div>
       {error && <div className="error-text" role="alert"><Icon name="alert" size={14} /> {error}</div>}
