@@ -1230,3 +1230,31 @@ input:focus, textarea:focus, select:focus {
 .sd-doctor-meta { grid-area: meta; }
 .sd-doctor-foot { grid-area: foot; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sd-doctor .sd-form-wrap { grid-area: form; margin: 4px 0 0; }
+
+/* "Where it appears" chooser */
+.where-field { display: flex; flex-direction: column; gap: 8px; }
+.where-option {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); cursor: pointer; transition: all var(--speed) var(--ease);
+}
+.where-option:hover { border-color: var(--primary); }
+.where-option.active { border-color: var(--primary); background: #faf8fe; box-shadow: 0 0 0 3px var(--primary-light); }
+.where-option input { width: 16px; height: 16px; margin-top: 3px; accent-color: var(--primary); flex-shrink: 0; }
+.where-option strong { display: block; font-size: 13.5px; }
+.where-option small { display: block; font-size: 12px; color: var(--muted); }
+.where-hospitals { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 0 4px; transition: opacity var(--speed) var(--ease); }
+.where-hospitals.is-muted { opacity: 0.55; }
+.where-chip {
+  position: relative; display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+  font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer;
+  transition: all var(--speed) var(--ease);
+}
+.where-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+.where-chip:hover { border-color: var(--primary); color: var(--primary); }
+.where-chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.where-chip:focus-within { box-shadow: 0 0 0 3px var(--primary-light); }
+
+.badge:not(.badge-live):not(.badge-draft) { background: var(--primary-light); color: var(--primary-dark); }

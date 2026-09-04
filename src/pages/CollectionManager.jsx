@@ -3,6 +3,7 @@ import { api } from '../api.js';
 import { RecordForm, clearSpecialityCache, clearLocationCache } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
+import { locationLabel } from '../locations.js';
 
 // Generic list + one entry form for a collection (procedures, news, stories…).
 // The form is the shared RecordForm, so every screen looks and behaves alike.
@@ -195,7 +196,7 @@ export function CollectionManager({ config }) {
                     <div className="muted small">
                       {[
                         item.category, item.designation, item.relation,
-                        item.location ? `Kinder ${item.location}` : 'All centres',
+                        locationLabel(item),
                         item.publishedAt ? String(item.publishedAt).slice(0, 10) : null,
                       ].filter(Boolean).join(' · ')}
                     </div>
