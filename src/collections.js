@@ -63,7 +63,7 @@ export const COLLECTIONS = [
           { name: 'category', label: 'Corporate services group', type: 'select', default: '',
             options: [{ value: '', label: 'Not on the corporate Services page (hospital-only)' }, ...SERVICE_GROUPS],
             hint: 'Puts it under that heading on the corporate Services page and header menu.' },
-          { name: 'location', label: 'Hospital', type: 'location' },
+          { name: 'location', label: 'Where it appears', type: 'location', wide: true },
           ORDER,
         ],
       },
@@ -143,8 +143,8 @@ export const COLLECTIONS = [
           { name: 'designation', label: 'Qualifications & role', type: 'text', placeholder: 'MBBS, MD (OBG) — Senior Consultant' },
           { name: 'speciality', label: 'Speciality', type: 'speciality',
             hint: 'Pick from the list so the doctor appears under that speciality.' },
-          { name: 'location', label: 'Hospital', type: 'location',
-            hint: 'The doctor is listed on this hospital’s page. “All centres” lists them everywhere.' },
+          { name: 'location', label: 'Where this doctor appears', type: 'location', wide: true,
+            hint: 'Listed on every ticked hospital’s page, plus the corporate Services and Doctors pages.' },
         ],
       },
       {
@@ -192,7 +192,7 @@ export const COLLECTIONS = [
       },
       {
         title: 'Where it appears',
-        fields: [{ name: 'location', label: 'Hospital', type: 'location', hint: '“All centres” shows it on the corporate site too.' }],
+        fields: [{ name: 'location', label: 'Where it appears', type: 'location', wide: true }],
       },
       VISIBILITY,
     ],
@@ -225,7 +225,7 @@ export const COLLECTIONS = [
       },
       {
         title: 'Where it appears',
-        fields: [{ name: 'location', label: 'Hospital', type: 'location', hint: '“All centres” shows it on the corporate site too.' }],
+        fields: [{ name: 'location', label: 'Where it appears', type: 'location', wide: true }],
       },
       VISIBILITY,
     ],
@@ -249,7 +249,7 @@ export const COLLECTIONS = [
       {
         title: 'Where it appears',
         fields: [
-          { name: 'location', label: 'Hospital', type: 'location', hint: '“All centres” lists it on the corporate site too.' },
+          { name: 'location', label: 'Where it appears', type: 'location', wide: true },
           ORDER,
         ],
       },

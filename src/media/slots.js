@@ -65,6 +65,9 @@ const record = (collection, item, key, extra) =>
   });
 
 const norm = (s) => String(s || '').trim().toLowerCase();
+const locationsOf = (item) => String(item?.location || '').split(',').map((s) => s.trim()).filter(Boolean);
+const atLocation = (item, name) => locationsOf(item).some((l) => norm(l) === norm(name));
+const locationLabel = (item) => { const l = locationsOf(item); return l.length ? l.map((n) => `Kinder ${n}`).join(' · ') : 'All centres'; };
 
 // ---------------------------------------------------------------------------
 // Corporate website (kinderhospitals.com)
@@ -172,7 +175,7 @@ export function buildCorporate(data) {
 export function buildHospital(data, loc) {
   const { doctors = [], specialities = [], procedures = [], testimonials = [], news = [] } = data;
   const slug = hospitalSlug(loc);
-  const mine = (list) => list.filter((x) => norm(x.location) === norm(loc.name));
+  const mine = (list) => list.filter((x) => atLocation(x, loc.name));
   const myDoctors = mine(doctors);
 
   const groups = [
@@ -265,7 +268,7 @@ export function buildContent(data, folder = 'doctors') {
       size: SIZES.portrait,
       items: doctors,
       label: (d) => d.name,
-      sub: (d) => [d.designation, d.location ? `Kinder ${d.location}` : 'All centres'].filter(Boolean).join(' · '),
+      sub: (d) => [d.designation, locationLabel(d)].filter(Boolean).join(' · '),
       collection: 'doctors', required: true, addPage: 'services-doctors', addLabel: 'Add doctor',
     },
     news: {
@@ -274,7 +277,7 @@ export function buildContent(data, folder = 'doctors') {
       size: SIZES.cover,
       items: news,
       label: (n) => n.title,
-      sub: (n) => [n.category, n.location ? `Kinder ${n.location}` : 'All centres'].filter(Boolean).join(' · '),
+      sub: (n) => [n.category, locationLabel(n)].filter(Boolean).join(' · '),
       collection: 'news', required: true, addPage: 'news', addLabel: 'Post news / event',
     },
     testimonials: {
@@ -283,7 +286,7 @@ export function buildContent(data, folder = 'doctors') {
       size: SIZES.square,
       items: testimonials,
       label: (t) => t.patientName,
-      sub: (t) => [t.relation, t.location ? `Kinder ${t.location}` : 'All centres'].filter(Boolean).join(' · '),
+      sub: (t) => [t.relation, locationLabel(t)].filter(Boolean).join(' · '),
       collection: 'testimonials', required: false, addPage: 'testimonials', addLabel: 'Add testimonial',
     },
     locations: {

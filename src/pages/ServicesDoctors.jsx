@@ -4,6 +4,7 @@ import { COLLECTIONS, SERVICE_GROUPS } from '../collections.js';
 import { RecordForm, clearSpecialityCache } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
+import { inScope, atLocation, locationsOf, locationLabel } from '../locations.js';
 
 // The one screen for the care offering — every speciality and every doctor.
 //   Corporate website tab — the four service groups shown on /services and in
@@ -125,29 +126,32 @@ export function ServicesDoctors() {
 
   const doctorsOf = (spec) =>
     docs.filter((d) => norm(d.speciality) === norm(spec.name) &&
-      (scope === '' || norm(d.location) === norm(scope)));
+      (scope === '' || atLocation(d, scope)));
 
   // Build the grouped view for the active scope.
   const view = useMemo(() => {
     if (!specs) return [];
-    const inScope = specs.filter((s) => norm(s.location || '') === norm(scope));
+    const scoped = specs.filter((s) => inScope(s, scope));
     let groups;
     if (scope === '') {
-      groups = GROUPS.map((g) => ({ title: g, specs: inScope.filter((s) => s.category === g) }));
-      const other = inScope.filter((s) => !GROUPS.includes(s.category));
+      groups = GROUPS.map((g) => ({ title: g, specs: scoped.filter((s) => s.category === g) }));
+      const other = scoped.filter((s) => !GROUPS.includes(s.category));
       if (other.length) groups.push({ title: 'Other specialities', noAdd: true, specs: other });
     } else {
       // Hospital scope: its own specialities, plus virtual rows for specialities
       // its doctors mention that have no record yet — nothing gets hidden.
-      const names = new Set(inScope.map((s) => norm(s.name)));
+      const names = new Set(scoped.map((s) => norm(s.name)));
       const virtual = [];
       for (const d of docs) {
-        if (norm(d.location) !== norm(scope) || !d.speciality) continue;
+        if (!atLocation(d, scope) || !d.speciality) continue;
         if (names.has(norm(d.speciality))) continue;
         names.add(norm(d.speciality));
-        virtual.push({ id: `virtual-${d.speciality}`, name: d.speciality, virtual: true });
+        // A group-wide speciality (managed under the Corporate tab) or one typed
+        // on a doctor profile that has no record yet.
+        const groupWide = specs.some((s) => norm(s.name) === norm(d.speciality) && !String(s.location || '').trim());
+        virtual.push({ id: `virtual-${d.speciality}`, name: d.speciality, virtual: true, groupWide });
       }
-      groups = [{ title: `Specialities at Kinder ${scope}`, specs: [...inScope, ...virtual] }];
+      groups = [{ title: `Specialities at Kinder ${scope}`, specs: [...scoped, ...virtual] }];
     }
     if (!q) return groups;
     // Search: keep a speciality if its name matches or any of its doctors match.
@@ -182,7 +186,7 @@ export function ServicesDoctors() {
     </div></div></div>;
   }
 
-  const scopeDocs = docs.filter((d) => scope === '' || norm(d.location) === norm(scope));
+  const scopeDocs = docs.filter((d) => scope === '' || atLocation(d, scope));
   const noPhoto = scopeDocs.filter((d) => !d.imageUrl).length;
 
   const renderForm = (anchor) => form && form.anchor === anchor && (
@@ -260,11 +264,13 @@ export function ServicesDoctors() {
                 {doc.imageUrl ? <img src={doc.imageUrl} alt="" /> : <span className="sd-doctor-noimg"><Icon name="doctor" size={16} /></span>}
                 <div className="sd-doctor-meta">
                   <strong>{doc.name}</strong>
-                  <span className="muted small">{[doc.designation, doc.speciality, doc.location ? `Kinder ${doc.location}` : 'All centres'].filter(Boolean).join(' · ')}</span>
+                  <span className="muted small">{[doc.designation, doc.speciality, locationLabel(doc)].filter(Boolean).join(' · ')}</span>
                 </div>
                 <div className="sd-doctor-foot">
                   <div className="sd-doctor-actions">
-                    {doc.location && <button className="btn btn-small btn-ghost" onClick={() => { setScope(doc.location); close(); }}>Open Kinder {doc.location} <Icon name="arrow" size={12} /></button>}
+                    {locationsOf(doc).map((n) => (
+                      <button key={n} className="btn btn-small btn-ghost" onClick={() => { setScope(n); close(); }}>Open Kinder {n} <Icon name="arrow" size={12} /></button>
+                    ))}
                     <button className="btn btn-small" onClick={() => { close(); openDoctorForm(doc, doc.speciality); }}><Icon name="pencil" size={13} /> Edit</button>
                   </div>
                 </div>
@@ -299,7 +305,9 @@ export function ServicesDoctors() {
                 <div className="sd-spec-head">
                   <div className="sd-spec-title">
                     <strong>{spec.name}</strong>
-                    {spec.virtual && <span className="badge badge-draft" title="Typed on a doctor profile — save it as a speciality to describe it">not saved yet</span>}
+                    {spec.virtual && (spec.groupWide
+                      ? <span className="badge" title="Managed under the Corporate website tab">group-wide speciality</span>
+                      : <span className="badge badge-draft" title="Typed on a doctor profile — save it as a speciality to describe it">not saved yet</span>)}
                     {!spec.virtual && <Visibility item={spec} label={spec.name} onToggle={() => toggle('specialities', spec, spec.name)} />}
                     <span className="muted small">{team.length} doctor{team.length === 1 ? '' : 's'}</span>
                   </div>
@@ -308,9 +316,15 @@ export function ServicesDoctors() {
                       <Icon name="plus" size={13} /> Add doctor
                     </button>
                     {spec.virtual ? (
-                      <button className="btn btn-small" onClick={() => { close(); openSpecForm({ name: spec.name, category: '', location: scope, description: '', icon: '', published: true, sortOrder: 0 }, group.title, `spec-${spec.id}`); }}>
-                        <Icon name="check" size={13} /> Save as speciality
-                      </button>
+                      spec.groupWide ? (
+                        <button className="btn btn-small btn-ghost" onClick={() => { setScope(''); close(); }}>
+                          Edit under Corporate <Icon name="arrow" size={12} />
+                        </button>
+                      ) : (
+                        <button className="btn btn-small" onClick={() => { close(); openSpecForm({ name: spec.name, category: '', location: scope, description: '', icon: '', published: true, sortOrder: 0 }, group.title, `spec-${spec.id}`); }}>
+                          <Icon name="check" size={13} /> Save as speciality
+                        </button>
+                      )
                     ) : (
                       <>
                         <button className="btn btn-small" onClick={() => { close(); openSpecForm(spec, group.title); }}>
@@ -336,7 +350,7 @@ export function ServicesDoctors() {
                           : <span className="sd-doctor-noimg" title="No photo yet"><Icon name="doctor" size={16} /></span>}
                         <div className="sd-doctor-meta">
                           <strong>{doc.name}</strong>
-                          <span className="muted small">{[doc.designation, doc.location ? `Kinder ${doc.location}` : 'All centres'].filter(Boolean).join(' · ')}</span>
+                          <span className="muted small">{[doc.designation, locationLabel(doc)].filter(Boolean).join(' · ')}</span>
                           {!doc.imageUrl && <span className="sd-nophoto"><Icon name="alert" size={11} /> No photo</span>}
                         </div>
                         <div className="sd-doctor-foot">
@@ -373,7 +387,7 @@ export function ServicesDoctors() {
                 {doc.imageUrl ? <img src={doc.imageUrl} alt="" /> : <span className="sd-doctor-noimg"><Icon name="doctor" size={16} /></span>}
                 <div className="sd-doctor-meta">
                   <strong>{doc.name}</strong>
-                  <span className="muted small">{[doc.designation, doc.speciality, doc.location ? `Kinder ${doc.location}` : 'All centres'].filter(Boolean).join(' · ')}</span>
+                  <span className="muted small">{[doc.designation, doc.speciality, locationLabel(doc)].filter(Boolean).join(' · ')}</span>
                 </div>
                 <div className="sd-doctor-foot">
                   <div className="sd-doctor-actions">

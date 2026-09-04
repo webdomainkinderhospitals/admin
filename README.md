@@ -19,6 +19,11 @@ Nothing on the website is edited in two places:
 | Each hospital's page, photos and contact details | **Hospitals** |
 | All photos, plus a done/pending checklist per website | **Media Library** |
 
+A doctor (or any record) can belong to several hospitals: the "Where it
+appears" chooser offers *Everywhere* or a set of ticked hospitals, stored in
+the existing `location` field as a comma-separated list ("Kochi, Bengaluru").
+The public site reads the same format via `lib/locations.js`.
+
 Every entry form is the same `RecordForm` (`src/fields.jsx`): numbered steps,
 a hint under each field, `*` on the few required fields, and one image control
 per photo (upload from computer, drag-and-drop, or choose from the library —

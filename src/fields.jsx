@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
 import { Icon } from './icons.jsx';
 import { ImagePicker } from './media/components.jsx';
+import { locationsOf, joinLocations } from './locations.js';
 
 // Shared cache of locations for the "Hospital" dropdowns.
 let locationsCache = null;
@@ -21,15 +22,50 @@ function useLocationNames() {
 }
 export function clearLocationCache() { locationsCache = null; }
 
-// "" = shown for all centres; a name = only that hospital's page.
+// Where something appears. "" = everywhere; otherwise a comma-separated list
+// of hospital names — a doctor can practise at several centres.
 export function LocationField({ value, onChange }) {
   const names = useLocationNames();
+  const chosen = locationsOf(value);
+  const everywhere = chosen.length === 0;
+  // Keep names that no longer match a hospital visible so they can be unticked.
+  const options = [...names, ...chosen.filter((c) => !names.some((n) => n.toLowerCase() === c.toLowerCase()))];
+
+  function toggleName(name) {
+    const has = chosen.some((c) => c.toLowerCase() === name.toLowerCase());
+    onChange(joinLocations(has ? chosen.filter((c) => c.toLowerCase() !== name.toLowerCase()) : [...chosen, name]));
+  }
+
   return (
-    <select value={value || ''} onChange={(e) => onChange(e.target.value)}>
-      <option value="">All centres (corporate website + every hospital)</option>
-      {names.map((n) => <option key={n} value={n}>Kinder {n} only</option>)}
-      {value && !names.includes(value) && <option value={value}>{value}</option>}
-    </select>
+    <div className="where-field" role="group" aria-label="Where it appears">
+      <label className={`where-option${everywhere ? ' active' : ''}`}>
+        <input type="radio" name={undefined} checked={everywhere} onChange={() => onChange('')} />
+        <span>
+          <strong>Everywhere</strong>
+          <small>Corporate website and every hospital page</small>
+        </span>
+      </label>
+      <label className={`where-option${!everywhere ? ' active' : ''}`}>
+        <input type="radio" checked={!everywhere} onChange={() => { if (everywhere && options[0]) onChange(options[0]); }} />
+        <span>
+          <strong>Selected hospitals</strong>
+          <small>Tick one or more — the same doctor can practise at several centres</small>
+        </span>
+      </label>
+      <div className={`where-hospitals${everywhere ? ' is-muted' : ''}`}>
+        {options.length === 0 && <span className="muted small">No hospitals yet — add one under Hospitals.</span>}
+        {options.map((n) => {
+          const on = chosen.some((c) => c.toLowerCase() === n.toLowerCase());
+          return (
+            <label key={n} className={`where-chip${on ? ' on' : ''}`}>
+              <input type="checkbox" checked={on} onChange={() => toggleName(n)} />
+              <Icon name={on ? 'check' : 'plus'} size={12} /> Kinder {n}
+            </label>
+          );
+        })}
+      </div>
+      {!everywhere && chosen.length === 0 && <p className="field-hint slot-warn">Tick at least one hospital, or choose Everywhere.</p>}
+    </div>
   );
 }
 
