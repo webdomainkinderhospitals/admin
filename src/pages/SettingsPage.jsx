@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { SETTING_FIELDS } from '../collections.js';
-import { Field } from '../fields.jsx';
+import { FieldRow } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
 
+// Site-wide settings, grouped by where they show up on the website.
 const SECTIONS = [
   {
-    title: 'Brand & contact',
-    hint: 'Shown in the header, top bar and footer of the website.',
+    title: 'Homepage hero',
+    hint: 'The big banner visitors see first on the corporate homepage.',
+    fields: ['heroTitle', 'heroSubtitle', 'heroImageUrl'],
+  },
+  {
+    title: 'Brand & contact details',
+    hint: 'Used in the header, footer, contact page and chat assistant of every site.',
     fields: ['siteName', 'tagline', 'helplinePhone', 'emergencyPhone', 'email', 'logoUrl'],
   },
   {
     title: 'Announcement bar',
-    hint: 'A message strip across the top of the site. Leave empty to hide it.',
+    hint: 'A short message strip across the very top of the site. Leave empty to hide it.',
     fields: ['announcement'],
-  },
-  {
-    title: 'Homepage hero',
-    hint: 'The big banner visitors see first.',
-    fields: ['heroTitle', 'heroSubtitle', 'heroImageUrl'],
   },
 ];
 
@@ -77,6 +78,7 @@ function ChangePasswordCard() {
 
 export function SettingsPage() {
   const [settings, setSettings] = useState(null);
+  const [saved, setSaved] = useState(null);
   const [stats, setStats] = useState([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -85,10 +87,13 @@ export function SettingsPage() {
     api('/api/settings')
       .then((s) => {
         setSettings(s);
+        setSaved(JSON.stringify({ ...s, stats: Array.isArray(s.stats) ? s.stats : [] }));
         setStats(Array.isArray(s.stats) ? s.stats : []);
       })
       .catch((e) => setError(e.message));
   }, []);
+
+  const dirty = settings && saved !== JSON.stringify({ ...settings, stats });
 
   async function save(e) {
     e.preventDefault();
@@ -96,6 +101,7 @@ export function SettingsPage() {
     setError('');
     try {
       await api('/api/settings', { method: 'PUT', body: { ...settings, stats } });
+      setSaved(JSON.stringify({ ...settings, stats }));
       toast('Settings saved — live on the site within a minute');
     } catch (err) {
       setError(err.message);
@@ -129,16 +135,10 @@ export function SettingsPage() {
                 const f = byName[name];
                 if (!f) return null;
                 return (
-                  <div
-                    className={`form-row${f.type === 'textarea' || f.type === 'image' ? ' form-row-wide' : ''}`}
-                    key={f.name}
-                  >
-                    <label>{f.label}</label>
-                    <Field
-                      field={f} value={settings[f.name]} folder="hero"
-                      onChange={(v) => setSettings((prev) => ({ ...prev, [f.name]: v }))}
-                    />
-                  </div>
+                  <FieldRow
+                    key={f.name} field={f} value={settings[f.name]}
+                    onChange={(v) => setSettings((prev) => ({ ...prev, [f.name]: v }))}
+                  />
                 );
               })}
             </div>
@@ -147,15 +147,15 @@ export function SettingsPage() {
 
         <div className="card form-card">
           <h2>Homepage statistics</h2>
-          <p className="muted card-hint">The animated numbers on the homepage (e.g. 13,000+ births).</p>
+          <p className="muted card-hint">The animated numbers on the homepage, e.g. “13,000+ Births delivered”.</p>
           {stats.map((s, i) => (
             <div className="stat-row" key={i}>
               <input
-                placeholder="Value (e.g. 13,000+)" value={s.value || ''}
+                placeholder="Number (e.g. 13,000+)" value={s.value || ''}
                 onChange={(e) => setStats(stats.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))}
               />
               <input
-                placeholder="Label (e.g. Births since 2011)" value={s.label || ''}
+                placeholder="Label (e.g. Births delivered)" value={s.label || ''}
                 onChange={(e) => setStats(stats.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
               />
               <button
@@ -167,15 +167,16 @@ export function SettingsPage() {
             </div>
           ))}
           <button type="button" className="btn btn-small" onClick={() => setStats([...stats, { value: '', label: '' }])}>
-            <Icon name="plus" size={14} /> Add stat
+            <Icon name="plus" size={14} /> Add a number
           </button>
         </div>
 
-        <div className="save-bar">
+        <div className={`save-bar${dirty ? ' is-dirty' : ''}`}>
           <button className="btn btn-primary" disabled={busy}>
             {busy ? <span className="spinner" aria-hidden="true"></span> : <Icon name="check" size={16} />}
             {busy ? 'Saving…' : 'Save all settings'}
           </button>
+          {dirty && <span className="save-bar-note"><Icon name="alert" size={14} /> You have unsaved changes</span>}
         </div>
       </form>
 

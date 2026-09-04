@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api } from '../api.js';
-import { Field } from '../fields.jsx';
+import { RecordForm, clearSpecialityCache, clearLocationCache } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
 
+// Generic list + one entry form for a collection (procedures, news, stories…).
+// The form is the shared RecordForm, so every screen looks and behaves alike.
 export function CollectionManager({ config }) {
   const [items, setItems] = useState(null); // null = loading
   const [editing, setEditing] = useState(null); // null | {} (new) | item
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false);
+  const formRef = useRef();
 
-  const singular = config.label.replace(/ies$/, 'y').replace(/s$/, '').toLowerCase();
+  const singular = config.singular || config.label.toLowerCase();
 
   async function load() {
     try {
@@ -34,20 +38,25 @@ export function CollectionManager({ config }) {
     load();
   }, [config.key]);
 
-  async function save(e) {
-    e.preventDefault();
+  useEffect(() => {
+    if (editing && formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [editing?.id, editing === null]);
+
+  async function save() {
     setBusy(true);
-    setError('');
+    setFormError('');
     try {
       const body = { ...editing };
       delete body.id;
       if (editing.id) await api(`/api/${config.key}/${editing.id}`, { method: 'PUT', body });
       else await api(`/api/${config.key}`, { method: 'POST', body });
+      if (config.key === 'specialities') clearSpecialityCache();
+      if (config.key === 'locations') clearLocationCache();
       setEditing(null);
       await load();
-      toast(`${config.label} saved — live within a minute`);
+      toast(`${cap(singular)} saved — live on the website within a minute`);
     } catch (err) {
-      setError(err.message);
+      setFormError(err.message);
     } finally {
       setBusy(false);
     }
@@ -57,10 +66,8 @@ export function CollectionManager({ config }) {
     const next = !(item.published !== false);
     setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: next } : x)));
     try {
-      const body = { ...item, published: next };
-      delete body.id;
-      await api(`/api/${config.key}/${item.id}`, { method: 'PUT', body });
-      toast(next ? 'Now live on the website' : 'Hidden from the website');
+      await api(`/api/${config.key}/${item.id}`, { method: 'PUT', body: { published: next } });
+      toast(next ? 'Now visible on the website' : 'Hidden from the website');
     } catch (e) {
       setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: !next } : x)));
       setError(e.message);
@@ -68,7 +75,7 @@ export function CollectionManager({ config }) {
   }
 
   async function remove(item) {
-    if (!confirm(`Delete "${item[config.titleField]}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete “${item[config.titleField]}” permanently?\n\nTip: if you only want to take it off the website for now, switch it to Hidden instead.`)) return;
     try {
       await api(`/api/${config.key}/${item.id}`, { method: 'DELETE' });
       await load();
@@ -89,53 +96,51 @@ export function CollectionManager({ config }) {
     const hay = Object.values(item).join(' ').toLowerCase();
     return hay.includes(query.toLowerCase());
   });
+  const hidden = (items || []).filter((i) => i.published === false).length;
+  const hasImage = config.fields.some((f) => f.type === 'image');
 
   return (
     <div className="page">
       <div className="page-head">
-        <div className="search-box">
-          <Icon name="search" size={16} />
-          <input
-            type="search"
-            placeholder={`Search ${config.label.toLowerCase()}…`}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label={`Search ${config.label}`}
-          />
+        <div className="page-head-text">
+          <p className="muted">
+            {items === null ? 'Loading…' : `${items.length} ${items.length === 1 ? singular : config.label.toLowerCase()}${hidden ? ` · ${hidden} hidden` : ''}`}
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditing(blank())}>
-          <Icon name="plus" size={16} /> Add {singular}
-        </button>
+        <div className="page-head-tools">
+          <div className="search-box">
+            <Icon name="search" size={16} />
+            <input
+              type="search"
+              placeholder={`Search ${config.label.toLowerCase()}…`}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label={`Search ${config.label}`}
+            />
+          </div>
+          <button className="btn btn-primary" onClick={() => setEditing(blank())}>
+            <Icon name="plus" size={16} /> Add {singular}
+          </button>
+        </div>
       </div>
       {error && <div className="error-banner" role="alert"><Icon name="alert" size={16} /> {error}</div>}
 
       {editing && (
-        <form className="card form-card" onSubmit={save}>
-          <h2>{editing.id ? `Edit ${singular}` : `New ${singular}`}</h2>
-          <div className="form-grid">
-            {config.fields.map((f) => (
-              <div
-                className={`form-row${f.type === 'textarea' || f.type === 'image' ? ' form-row-wide' : ''}`}
-                key={f.name}
-              >
-                <label>{f.label}{f.required ? <span className="req"> *</span> : ''}</label>
-                <Field
-                  field={f}
-                  value={editing[f.name]}
-                  folder={config.key}
-                  onChange={(v) => setEditing((prev) => ({ ...prev, [f.name]: v }))}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="form-actions">
-            <button className="btn btn-primary" disabled={busy}>
-              {busy ? <span className="spinner" aria-hidden="true"></span> : <Icon name="check" size={16} />}
-              {busy ? 'Saving…' : 'Save'}
-            </button>
-            <button type="button" className="btn" onClick={() => setEditing(null)}>Cancel</button>
-          </div>
-        </form>
+        <div ref={formRef}>
+          <RecordForm
+            sections={config.sections}
+            value={editing}
+            onChange={setEditing}
+            onSubmit={save}
+            onCancel={() => { setEditing(null); setFormError(''); }}
+            busy={busy}
+            error={formError}
+            folder={config.key}
+            title={editing.id ? `Edit ${singular}` : `New ${singular}`}
+            subtitle={editing.id ? undefined : `Fill in the steps below. Only fields marked * are required — you can add the rest later.`}
+            submitLabel={editing.id ? 'Save changes' : `Add ${singular}`}
+          />
+        </div>
       )}
 
       <div className="card table-card">
@@ -170,23 +175,29 @@ export function CollectionManager({ config }) {
           <table className="table">
             <thead>
               <tr>
-                <th colSpan="2">{list.length} {list.length === 1 ? singular : config.label.toLowerCase()}</th>
-                <th>Status</th>
+                <th colSpan={hasImage ? 2 : 1}>{config.label}</th>
+                <th>On website</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {list.map((item) => (
-                <tr key={item.id}>
-                  <td className="thumb-cell">
-                    {item.imageUrl
-                      ? <img src={item.imageUrl} alt="" loading="lazy" />
-                      : <span className="thumb-empty"><Icon name={config.icon} size={18} /></span>}
-                  </td>
+                <tr key={item.id} className={item.published === false ? 'is-hidden' : ''}>
+                  {hasImage && (
+                    <td className="thumb-cell">
+                      {item.imageUrl
+                        ? <img src={item.imageUrl} alt="" loading="lazy" />
+                        : <span className="thumb-empty" title="No photo yet"><Icon name={config.icon} size={18} /></span>}
+                    </td>
+                  )}
                   <td>
-                    <strong>{item[config.titleField]}</strong>
+                    <button type="button" className="row-title" onClick={() => setEditing(item)}>{item[config.titleField]}</button>
                     <div className="muted small">
-                      {['city', 'designation', 'category', 'relation'].map((k) => item[k]).filter(Boolean).join(' · ')}
+                      {[
+                        item.category, item.designation, item.relation,
+                        item.location ? `Kinder ${item.location}` : 'All centres',
+                        item.publishedAt ? String(item.publishedAt).slice(0, 10) : null,
+                      ].filter(Boolean).join(' · ')}
                     </div>
                   </td>
                   <td>
@@ -199,7 +210,7 @@ export function CollectionManager({ config }) {
                       onClick={() => togglePublish(item)}
                     >
                       <span className="switch-track" aria-hidden="true"><span className="switch-thumb"></span></span>
-                      <span className="switch-text">{item.published !== false ? 'Live' : 'Hidden'}</span>
+                      <span className="switch-text">{item.published !== false ? 'Visible' : 'Hidden'}</span>
                     </button>
                   </td>
                   <td className="actions-cell">
@@ -223,3 +234,5 @@ export function CollectionManager({ config }) {
     </div>
   );
 }
+
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
