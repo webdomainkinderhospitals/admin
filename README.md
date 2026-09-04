@@ -7,6 +7,23 @@ site within about a minute.
 
 **Stack:** React 18 · Vite · deployed on Vercel
 
+## One place for everything
+
+Nothing on the website is edited in two places:
+
+| What | Where |
+| --- | --- |
+| Hero, logo, phones, announcement, homepage numbers | **Site Settings** |
+| Specialities and the doctors in them (corporate groups and per hospital) | **Services & Doctors** |
+| Procedures, News & Events, Testimonials | their own screens |
+| Each hospital's page, photos and contact details | **Hospitals** |
+| All photos, plus a done/pending checklist per website | **Media Library** |
+
+Every entry form is the same `RecordForm` (`src/fields.jsx`): numbered steps,
+a hint under each field, `*` on the few required fields, and one image control
+per photo (upload from computer, drag-and-drop, or choose from the library —
+no URL pasting). Field definitions and hints live in `src/collections.js`.
+
 ## Media Library (images & content hub)
 
 The Media Library is the one screen that shows what is still missing on the

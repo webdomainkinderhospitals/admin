@@ -97,43 +97,51 @@ function initials(user) {
 }
 
 const byKey = Object.fromEntries(COLLECTIONS.map((c) => [c.key, c]));
-const navItem = (key) => ({ key, label: byKey[key].label, icon: byKey[key].icon });
+const navItem = (key, desc) => ({ key, label: byKey[key].label, icon: byKey[key].icon, desc });
 
+// One entry point per kind of content — nothing is editable in two places.
+//   Doctors and specialities → Services & Doctors (corporate groups + per hospital)
+//   Hospitals (their page, photos, contact) → Hospitals
+//   Images for everything, with a done/pending checklist → Media Library
 const NAV_GROUPS = [
   {
     title: 'Overview',
     items: [
-      { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { key: 'media', label: 'Media Library', icon: 'image' },
+      { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', desc: 'Live vs pending' },
+      { key: 'media', label: 'Media Library', icon: 'image', desc: 'Photos & checklist' },
     ],
   },
   {
-    title: 'Corporate Website',
+    title: 'Website content',
     items: [
-      { key: 'settings', label: 'Site Settings', icon: 'settings' },
-      { key: 'services-doctors', label: 'Services & Doctors', icon: 'stethoscope' },
-      navItem('specialities'),
-      navItem('procedures'),
-      navItem('news'),
-      navItem('testimonials'),
+      { key: 'settings', label: 'Site Settings', icon: 'settings', desc: 'Hero, logo, contact' },
+      { key: 'services-doctors', label: 'Services & Doctors', icon: 'stethoscope', desc: 'Specialities & doctors' },
+      navItem('procedures', 'Treatments'),
+      navItem('news', 'Posts & camps'),
+      navItem('testimonials', 'Patient stories'),
     ],
   },
   {
     title: 'Hospitals',
     items: [
-      { key: 'hospitals', label: 'Hospitals', icon: 'building' },
-      navItem('doctors'),
+      { key: 'hospitals', label: 'Hospitals', icon: 'building', desc: 'Pages & details' },
     ],
   },
 ];
 
+// Old page keys that now live inside another screen.
+const ALIASES = { doctors: 'services-doctors', specialities: 'services-doctors', locations: 'hospitals' };
+
+// Collections that still have their own generic list screen.
+const LIST_PAGES = ['procedures', 'news', 'testimonials'];
+
 const QUICK_ADDS = [
-  { key: 'doctors', label: 'Add doctor', icon: 'doctor', openForm: true },
+  { key: 'services-doctors', label: 'Add doctor', icon: 'doctor', openForm: true },
   { key: 'news', label: 'Post news / event', icon: 'news', openForm: true },
-  { key: 'testimonials', label: 'Add testimonial', icon: 'chat', openForm: true },
+  { key: 'testimonials', label: 'Add patient story', icon: 'chat', openForm: true },
   { key: 'procedures', label: 'Add procedure', icon: 'activity', openForm: true },
-  { key: 'media', label: 'Upload images & fill pending slots', icon: 'upload' },
-  { key: 'settings', label: 'Edit hero & settings', icon: 'spark' },
+  { key: 'hospitals', label: 'Add hospital', icon: 'building' },
+  { key: 'media', label: 'Upload photos', icon: 'upload' },
 ];
 
 const TITLES = Object.fromEntries(
@@ -143,8 +151,9 @@ const TITLES = Object.fromEntries(
 export default function App() {
   const [user, setUser] = useState(null);
   const [checked, setChecked] = useState(false);
-  const [page, setPage] = useState('dashboard');
+  const [page, setRawPage] = useState('dashboard');
   const [quickOpen, setQuickOpen] = useState(false);
+  const setPage = (key) => setRawPage(ALIASES[key] || key);
 
   function quickAdd(item) {
     setQuickOpen(false);
@@ -197,7 +206,10 @@ export default function App() {
                   onClick={() => setPage(n.key)}
                 >
                   <Icon name={n.icon} size={18} />
-                  <span>{n.label}</span>
+                  <span className="nav-text">
+                    <span>{n.label}</span>
+                    {n.desc && <small>{n.desc}</small>}
+                  </span>
                 </button>
               ))}
             </div>
@@ -251,8 +263,8 @@ export default function App() {
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary goTo={setPage} />}
           {page === 'services-doctors' && <ServicesDoctors />}
-          {page === 'hospitals' && <HospitalsManager />}
-          {COLLECTIONS.map((c) => page === c.key && <CollectionManager key={c.key} config={c} />)}
+          {page === 'hospitals' && <HospitalsManager goTo={setPage} />}
+          {COLLECTIONS.filter((c) => LIST_PAGES.includes(c.key)).map((c) => page === c.key && <CollectionManager key={c.key} config={c} />)}
         </main>
       </div>
       <ToastHost />

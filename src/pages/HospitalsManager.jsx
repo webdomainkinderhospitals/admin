@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api } from '../api.js';
 import { COLLECTIONS } from '../collections.js';
-import { Field } from '../fields.jsx';
+import { RecordForm, clearLocationCache } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
+import { openMediaArea } from './MediaLibrary.jsx';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || '';
 
@@ -31,12 +32,14 @@ function Toggle({ on, busy, label, onChange }) {
   );
 }
 
-export function HospitalsManager() {
+export function HospitalsManager({ goTo = () => {} }) {
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // null | {} | item
   const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false);
   const [toggling, setToggling] = useState(null); // id being toggled
+  const formRef = useRef();
 
   async function load() {
     try {
@@ -47,17 +50,17 @@ export function HospitalsManager() {
     }
   }
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (editing && formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [editing?.id, editing === null]);
 
   async function toggle(loc) {
     setToggling(loc.id);
     setError('');
     const next = !(loc.published !== false);
-    // optimistic — flip immediately, roll back on failure
     setItems((list) => list.map((l) => (l.id === loc.id ? { ...l, published: next } : l)));
     try {
-      const body = { ...loc, published: next };
-      delete body.id;
-      await api(`/api/locations/${loc.id}`, { method: 'PUT', body });
+      await api(`/api/locations/${loc.id}`, { method: 'PUT', body: { published: next } });
       toast(next
         ? `Kinder ${loc.name} is now visible on the website`
         : `Kinder ${loc.name} is now hidden from the website`);
@@ -69,29 +72,30 @@ export function HospitalsManager() {
     }
   }
 
-  async function save(e) {
-    e.preventDefault();
+  async function save() {
     setBusy(true);
-    setError('');
+    setFormError('');
     try {
       const body = { ...editing };
       delete body.id;
       if (editing.id) await api(`/api/locations/${editing.id}`, { method: 'PUT', body });
       else await api('/api/locations', { method: 'POST', body });
+      clearLocationCache();
       setEditing(null);
       await load();
       toast('Hospital saved — live within a minute');
     } catch (err) {
-      setError(err.message);
+      setFormError(err.message);
     } finally {
       setBusy(false);
     }
   }
 
   async function remove(loc) {
-    if (!confirm(`Delete Kinder ${loc.name} permanently?\n\nIts page and menu entry disappear from the website. Tip: if you only want to hide it for now, use the visibility toggle instead.`)) return;
+    if (!confirm(`Delete Kinder ${loc.name} permanently?\n\nIts page and menu entry disappear from the website. Tip: if you only want to hide it for now, use the visibility switch instead.`)) return;
     try {
       await api(`/api/locations/${loc.id}`, { method: 'DELETE' });
+      clearLocationCache();
       await load();
       toast(`Kinder ${loc.name} deleted`);
     } catch (e) {
@@ -100,6 +104,7 @@ export function HospitalsManager() {
   }
 
   const live = (items || []).filter((l) => l.published !== false).length;
+  const newHospital = () => setEditing({ published: true, country: 'India', sortOrder: (items || []).length + 1 });
 
   return (
     <div className="page">
@@ -110,10 +115,10 @@ export function HospitalsManager() {
             {items === null ? 'Loading…' : `${items.length} centre${items.length === 1 ? '' : 's'} · ${live} visible on the website`}
           </p>
           <p className="muted small">
-            Switch a hospital off to hide it everywhere — menu, homepage and its own page — without deleting anything. Switch it back on any time.
+            Each hospital gets its own page and a card on the homepage. Its doctors and specialities are managed under <button className="link-btn" onClick={() => goTo('services-doctors')}>Services &amp; Doctors</button>.
           </p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditing({ published: true, country: 'India' })}>
+        <button className="btn btn-primary" onClick={newHospital}>
           <Icon name="plus" size={16} /> Add new hospital
         </button>
       </div>
@@ -121,35 +126,21 @@ export function HospitalsManager() {
       {error && <div className="error-banner" role="alert"><Icon name="alert" size={16} /> {error}</div>}
 
       {editing && (
-        <form className="card form-card" onSubmit={save}>
-          <h2>{editing.id ? `Edit Kinder ${editing.name}` : 'New hospital'}</h2>
-          <p className="muted card-hint">
-            Everything about this centre — its card in the menu, its own page, contact details and photos.
-          </p>
-          <div className="form-grid">
-            {config.fields.map((f) => (
-              <div
-                className={`form-row${f.type === 'textarea' || f.type === 'image' ? ' form-row-wide' : ''}`}
-                key={f.name}
-              >
-                <label>{f.label}{f.required ? <span className="req"> *</span> : ''}</label>
-                <Field
-                  field={f}
-                  value={editing[f.name]}
-                  folder="locations"
-                  onChange={(v) => setEditing((prev) => ({ ...prev, [f.name]: v }))}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="form-actions">
-            <button className="btn btn-primary" disabled={busy}>
-              {busy ? <span className="spinner" aria-hidden="true"></span> : <Icon name="check" size={16} />}
-              {busy ? 'Saving…' : 'Save hospital'}
-            </button>
-            <button type="button" className="btn" onClick={() => setEditing(null)}>Cancel</button>
-          </div>
-        </form>
+        <div ref={formRef}>
+          <RecordForm
+            sections={config.sections}
+            value={editing}
+            onChange={setEditing}
+            onSubmit={save}
+            onCancel={() => { setEditing(null); setFormError(''); }}
+            busy={busy}
+            error={formError}
+            folder="locations"
+            title={editing.id ? `Edit Kinder ${editing.name}` : 'New hospital'}
+            subtitle="Everything about this centre — its card on the homepage, its own page, photos and contact details."
+            submitLabel={editing.id ? 'Save changes' : 'Add hospital'}
+          />
+        </div>
       )}
 
       {items === null ? (
@@ -161,7 +152,7 @@ export function HospitalsManager() {
           <Icon name="building" size={30} />
           <strong>No hospitals yet</strong>
           <p>Add your first centre — it appears on the website within a minute.</p>
-          <button className="btn btn-primary" onClick={() => setEditing({ published: true, country: 'India' })}>
+          <button className="btn btn-primary" onClick={newHospital}>
             <Icon name="plus" size={16} /> Add new hospital
           </button>
         </div>
@@ -169,6 +160,10 @@ export function HospitalsManager() {
         <div className="hosp-grid">
           {items.map((loc) => {
             const on = loc.published !== false;
+            const missing = [
+              !loc.imageUrl && 'card photo', !loc.tagline && 'tagline', !loc.description && 'about text',
+              !loc.address && 'address', !loc.phone && 'phone',
+            ].filter(Boolean);
             return (
               <article className={`card hosp-card${on ? '' : ' is-off'}`} key={loc.id}>
                 <div
@@ -183,6 +178,11 @@ export function HospitalsManager() {
                     <h3>Kinder {loc.name}</h3>
                     <span className="muted small">{[loc.city, loc.country].filter(Boolean).join(', ')}{loc.since ? ` · ${loc.since}` : ''}</span>
                   </div>
+                  {missing.length > 0 ? (
+                    <p className="hosp-missing"><Icon name="alert" size={13} /> Still missing: {missing.join(', ')}</p>
+                  ) : (
+                    <p className="hosp-complete"><Icon name="check" size={13} /> Page details complete</p>
+                  )}
                   <Toggle
                     on={on}
                     busy={toggling === loc.id}
@@ -190,8 +190,11 @@ export function HospitalsManager() {
                     onChange={() => toggle(loc)}
                   />
                   <div className="hosp-card-actions">
-                    <button className="btn btn-small" onClick={() => { setEditing(loc); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                    <button className="btn btn-small" onClick={() => setEditing(loc)}>
                       <Icon name="pencil" size={14} /> Edit details
+                    </button>
+                    <button className="btn btn-small" onClick={() => { openMediaArea({ section: 'hospitals', hospital: slugOf(loc) }); goTo('media'); }} title="Photos and page checklist for this hospital">
+                      <Icon name="image" size={14} /> Photos
                     </button>
                     {SITE_URL && on && (
                       <a className="btn btn-small btn-ghost" href={`${SITE_URL}/hospitals/${slugOf(loc)}`} target="_blank" rel="noopener">
