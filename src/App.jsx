@@ -132,7 +132,7 @@ const QUICK_ADDS = [
   { key: 'news', label: 'Post news / event', icon: 'news', openForm: true },
   { key: 'testimonials', label: 'Add testimonial', icon: 'chat', openForm: true },
   { key: 'procedures', label: 'Add procedure', icon: 'activity', openForm: true },
-  { key: 'media', label: 'Upload images', icon: 'upload' },
+  { key: 'media', label: 'Upload images & fill pending slots', icon: 'upload' },
   { key: 'settings', label: 'Edit hero & settings', icon: 'spark' },
 ];
 
@@ -249,7 +249,7 @@ export default function App() {
         <main className="content">
           {page === 'dashboard' && <Dashboard goTo={setPage} />}
           {page === 'settings' && <SettingsPage />}
-          {page === 'media' && <MediaLibrary />}
+          {page === 'media' && <MediaLibrary goTo={setPage} />}
           {page === 'services-doctors' && <ServicesDoctors />}
           {page === 'hospitals' && <HospitalsManager />}
           {COLLECTIONS.map((c) => page === c.key && <CollectionManager key={c.key} config={c} />)}
