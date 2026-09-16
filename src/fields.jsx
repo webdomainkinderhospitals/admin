@@ -229,6 +229,8 @@ export function Field({ field, value, onChange, folder }) {
       return <textarea rows={field.rows || 3} value={v} placeholder={field.placeholder} onChange={(e) => onChange(e.target.value)} />;
     case 'number':
       return <input type="number" value={v} placeholder={field.placeholder} onChange={(e) => onChange(e.target.value)} />;
+    case 'readonly':
+      return <p className="source-reference">{v || 'Created in admin'}</p>;
     case 'checkbox':
       return (
         <label className="checkbox">
@@ -324,7 +326,7 @@ export function RecordForm({ sections, value, onChange, onSubmit, onCancel, busy
           {busy ? 'Saving…' : submitLabel}
         </button>
         <button type="button" className="btn" onClick={onCancel}>Cancel</button>
-        <span className="muted small form-actions-note">Changes go live on the website within a minute.</span>
+        <span className="muted small form-actions-note">Published changes appear within a minute. Hidden records remain drafts.</span>
       </div>
     </form>
   );
