@@ -1,3 +1,4 @@
+import { PublishControl } from '../PublishControl.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { api } from '../api.js';
 import { RecordForm, clearSpecialityCache, clearLocationCache } from '../fields.jsx';
@@ -60,18 +61,6 @@ export function CollectionManager({ config, category = '' }) {
       setFormError(err.message);
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function togglePublish(item) {
-    const next = !(item.published !== false);
-    setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: next } : x)));
-    try {
-      await api(`/api/${config.key}/${item.id}`, { method: 'PUT', body: { published: next } });
-      toast(next ? 'Now visible on the website' : 'Hidden from the website');
-    } catch (e) {
-      setItems((list) => list.map((x) => (x.id === item.id ? { ...x, published: !next } : x)));
-      setError(e.message);
     }
   }
 
@@ -205,17 +194,9 @@ export function CollectionManager({ config, category = '' }) {
                     </div>
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={item.published !== false}
-                      aria-label={`Toggle "${item[config.titleField]}" visibility on the website`}
-                      className={`switch switch-compact${item.published !== false ? ' on' : ''}`}
-                      onClick={() => togglePublish(item)}
-                    >
-                      <span className="switch-track" aria-hidden="true"><span className="switch-thumb"></span></span>
-                      <span className="switch-text">{item.published !== false ? 'Visible' : 'Hidden'}</span>
-                    </button>
+                    <PublishControl item={item} config={config}
+                      onSaved={(saved) => setItems((rows) => rows.map((r) => r.id === saved.id ? saved : r))}
+                      onEdit={() => { setFormError(''); setEditing(item); }} />
                   </td>
                   <td className="actions-cell">
                     <button className="btn btn-small" onClick={() => setEditing(item)}>

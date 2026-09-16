@@ -1,3 +1,4 @@
+import { PublishControl } from '../PublishControl.jsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api.js';
 import { COLLECTIONS, SERVICE_GROUPS } from '../collections.js';
@@ -18,19 +19,6 @@ const docConfig = COLLECTIONS.find((c) => c.key === 'doctors');
 const specConfig = COLLECTIONS.find((c) => c.key === 'specialities');
 
 const norm = (s) => String(s || '').trim().toLowerCase();
-
-function Visibility({ item, label, onToggle }) {
-  const on = item.published !== false;
-  return (
-    <button
-      type="button" role="switch" aria-checked={on} aria-label={`Toggle ${label} visibility on the website`}
-      className={`switch switch-compact${on ? ' on' : ''}`} onClick={onToggle}
-    >
-      <span className="switch-track" aria-hidden="true"><span className="switch-thumb"></span></span>
-      <span className="switch-text">{on ? 'Visible' : 'Hidden'}</span>
-    </button>
-  );
-}
 
 export function ServicesDoctors() {
   const [specs, setSpecs] = useState(null);
@@ -91,23 +79,10 @@ export function ServicesDoctors() {
       if (value.id) await api(`/api/${col}/${value.id}`, { method: 'PUT', body });
       else await api(`/api/${col}`, { method: 'POST', body });
       if (kind === 'spec') clearSpecialityCache();
-      toast(`${kind === 'doctor' ? 'Doctor' : 'Speciality'} saved — live within a minute`);
+      toast(value.published ? 'Saved — published changes appear within a minute' : 'Saved as a hidden draft');
       close();
       load();
     } catch (e) { setFormError(e.message); } finally { setBusy(false); }
-  }
-
-  async function toggle(col, item, label) {
-    const next = !(item.published !== false);
-    const setList = col === 'doctors' ? setDocs : setSpecs;
-    setList((list) => list.map((x) => (x.id === item.id ? { ...x, published: next } : x)));
-    try {
-      await api(`/api/${col}/${item.id}`, { method: 'PUT', body: { published: next } });
-      toast(next ? `${label} is now visible on the website` : `${label} is now hidden from the website`);
-    } catch (e) {
-      setList((list) => list.map((x) => (x.id === item.id ? { ...x, published: !next } : x)));
-      setError(e.message);
-    }
   }
 
   async function removeDoctor(doc) {
@@ -267,6 +242,9 @@ export function ServicesDoctors() {
                   <span className="muted small">{[doc.designation, doc.speciality, locationLabel(doc)].filter(Boolean).join(' · ')}</span>
                 </div>
                 <div className="sd-doctor-foot">
+                  <PublishControl item={doc} config={docConfig}
+                    onSaved={(saved) => setDocs((rows) => rows.map((r) => r.id === saved.id ? saved : r))}
+                    onEdit={() => { close(); openDoctorForm(doc, doc.speciality); }} />
                   <div className="sd-doctor-actions">
                     {locationsOf(doc).map((n) => (
                       <button key={n} className="btn btn-small btn-ghost" onClick={() => { setScope(n); close(); }}>Open Kinder {n} <Icon name="arrow" size={12} /></button>
@@ -308,7 +286,9 @@ export function ServicesDoctors() {
                     {spec.virtual && (spec.groupWide
                       ? <span className="badge" title="Managed under the Corporate website tab">group-wide speciality</span>
                       : <span className="badge badge-draft" title="Typed on a doctor profile — save it as a speciality to describe it">not saved yet</span>)}
-                    {!spec.virtual && <Visibility item={spec} label={spec.name} onToggle={() => toggle('specialities', spec, spec.name)} />}
+                    {!spec.virtual && <PublishControl item={spec} config={specConfig}
+                      onSaved={(saved) => { setSpecs((rows) => rows.map((r) => r.id === saved.id ? saved : r)); clearSpecialityCache(); }}
+                      onEdit={() => { close(); openSpecForm(spec, group.title); }} />}
                     <span className="muted small">{team.length} doctor{team.length === 1 ? '' : 's'}</span>
                   </div>
                   <div className="sd-spec-actions">
@@ -354,7 +334,9 @@ export function ServicesDoctors() {
                           {!doc.imageUrl && <span className="sd-nophoto"><Icon name="alert" size={11} /> No photo</span>}
                         </div>
                         <div className="sd-doctor-foot">
-                          <Visibility item={doc} label={doc.name} onToggle={() => toggle('doctors', doc, doc.name)} />
+                          <PublishControl item={doc} config={docConfig}
+                            onSaved={(saved) => setDocs((rows) => rows.map((r) => r.id === saved.id ? saved : r))}
+                            onEdit={() => { close(); openDoctorForm(doc, spec.name); }} />
                           <div className="sd-doctor-actions">
                             <button className="btn btn-small" aria-label={`Edit ${doc.name}`} onClick={() => { close(); openDoctorForm(doc, spec.name); }}>
                               <Icon name="pencil" size={13} /> Edit
@@ -390,6 +372,9 @@ export function ServicesDoctors() {
                   <span className="muted small">{[doc.designation, doc.speciality, locationLabel(doc)].filter(Boolean).join(' · ')}</span>
                 </div>
                 <div className="sd-doctor-foot">
+                  <PublishControl item={doc} config={docConfig}
+                    onSaved={(saved) => setDocs((rows) => rows.map((r) => r.id === saved.id ? saved : r))}
+                    onEdit={() => { close(); openDoctorForm(doc, doc.speciality); }} />
                   <div className="sd-doctor-actions">
                     <button className="btn btn-small" onClick={() => { close(); openDoctorForm(doc, doc.speciality); }}><Icon name="pencil" size={13} /> Edit</button>
                   </div>
