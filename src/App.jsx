@@ -4,6 +4,7 @@ import { COLLECTIONS } from './collections.js';
 import { CollectionManager } from './pages/CollectionManager.jsx';
 import { MediaLibrary } from './pages/MediaLibrary.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
+import { WebsiteContent } from './pages/WebsiteContent.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { ServicesDoctors } from './pages/ServicesDoctors.jsx';
 import { HospitalsManager } from './pages/HospitalsManager.jsx';
@@ -116,6 +117,7 @@ const NAV_GROUPS = [
     items: [
       { key: 'settings', label: 'Site Settings', icon: 'settings', desc: 'Hero, logo, contact' },
       { key: 'services-doctors', label: 'Services & Doctors', icon: 'stethoscope', desc: 'Specialities & doctors' },
+      { key: 'website-content', label: 'Content Library', icon: 'news', desc: 'Pages & supplied content' },
       navItem('procedures', 'Treatments'),
       navItem('news', 'Posts & camps'),
       navItem('testimonials', 'Patient stories'),
@@ -260,6 +262,7 @@ export default function App() {
         </header>
         <main className="content">
           {page === 'dashboard' && <Dashboard goTo={setPage} />}
+          {page === 'website-content' && <WebsiteContent goTo={setPage} />}
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary goTo={setPage} />}
           {page === 'services-doctors' && <ServicesDoctors />}
