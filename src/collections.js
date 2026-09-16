@@ -258,6 +258,43 @@ export const COLLECTIONS = [
   },
 ];
 
+const REVIEW_SECTION = {
+  title: 'Source and editorial review',
+  fields: [
+    { name: 'sourceFiles', label: 'Source documents', type: 'readonly', wide: true },
+    { name: 'reviewNotes', label: 'Review notes', type: 'textarea', rows: 3, wide: true,
+      hint: 'Resolve each point, then clear these notes before publishing. Notes are visible only to staff.' },
+  ],
+};
+export const PAGE_CATEGORIES = ['About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
+COLLECTIONS.push({
+  key: 'pages', label: 'Content Pages', singular: 'page', icon: 'news', titleField: 'title',
+  sections: [
+    { title: 'Page details', fields: [
+      { name: 'title', label: 'Page title', type: 'text', required: true },
+      { name: 'slug', label: 'Page address', type: 'text', required: true, hint: 'Appears at /information/your-page-address. Use lowercase letters, numbers and hyphens.' },
+      { name: 'category', label: 'Section', type: 'select', options: PAGE_CATEGORIES, default: 'About Us' },
+      { name: 'location', label: 'Applicable hospitals', type: 'location', wide: true },
+    ] },
+    { title: 'Page content', fields: [
+      { name: 'excerpt', label: 'Short introduction', type: 'textarea', rows: 3, wide: true },
+      { name: 'body', label: 'Full content', type: 'textarea', rows: 16, wide: true, required: true,
+        hint: 'Separate paragraphs with a blank line. Start a heading with ## and each list item with -. HTML is displayed as text.' },
+      { name: 'imageUrl', label: 'Page photograph', type: 'image', folder: 'general', wide: true },
+    ] },
+    REVIEW_SECTION,
+    { title: 'Order and visibility', fields: [ORDER, { ...VISIBILITY.fields[0], default: false }] },
+  ],
+});
+for (const key of ['doctors', 'specialities']) {
+  const c = COLLECTIONS.find((item) => item.key === key);
+  c.sections.splice(c.sections.length - 1, 0, REVIEW_SECTION);
+}
+COLLECTIONS.find((c) => c.key === 'specialities').sections[0].fields.push({
+  name: 'fullDescription', label: 'Full speciality information', type: 'textarea', rows: 12, wide: true,
+  hint: 'Complete service information, preserving the source details.',
+});
+
 // Flat field list per collection (used by tables, blank records, etc.).
 for (const c of COLLECTIONS) c.fields = c.sections.flatMap((s) => s.fields);
 
