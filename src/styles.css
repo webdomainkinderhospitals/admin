@@ -1280,3 +1280,24 @@ input:focus, textarea:focus, select:focus {
 .review-badge { display: inline-block; padding: 4px 9px; border-radius: 5px; background: #e7f4f1; color: #17594f; font-size: 12px; font-weight: 650; }
 .source-reference { white-space: pre-wrap; overflow-wrap: anywhere; color: #53636d; font-size: 13px; }
 @media (max-width: 760px) { .content-intro { flex-direction: column; align-items: stretch; padding: 20px; } .content-counts { grid-template-columns: 1fr; } .content-section-filter { align-items: stretch; flex-direction: column; } }
+
+/* Review and publication, shared by pages, doctors and specialities. */
+.publish-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.publish-control .error-text { flex-basis: 100%; }
+.publish-dialog { width: min(800px, calc(100vw - 32px)); max-height: 90dvh; padding: 0; border: 1px solid #ded6f2; border-radius: 16px; color: #292039; background: white; box-shadow: 0 24px 90px #22113d40; }
+.publish-dialog[open] { display: flex; flex-direction: column; }
+.publish-dialog::backdrop { background: #21113f99; }
+.publish-dialog-head, .publish-dialog-foot { padding: 20px 24px; flex-shrink: 0; }
+.publish-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 1px solid #eee7fa; }
+.publish-dialog-head h2 { margin: 8px 0 0; }
+.publish-dialog-body { padding: 8px 24px 24px; overflow-y: auto; min-height: 0; }
+.publish-dialog-body section { margin-top: 20px; }
+.publish-dialog-body h3 { margin: 0 0 8px; font-size: 14px; }
+.publish-preview-text, .publish-review-notes p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.publish-review-notes { padding: 16px; border-radius: 10px; background: #fff7df; color: #63470c; }
+.publish-preview-image { max-width: 220px; max-height: 220px; object-fit: contain; }
+.publish-dialog-foot { border-top: 1px solid #eee7fa; background: #faf8fe; }
+.publish-dialog-foot .content-actions { flex-direction: row; flex-wrap: wrap; margin-top: 12px; }
+.publish-dialog-foot .checkbox { align-items: flex-start; }
+.publish-dialog-foot .checkbox input { flex-shrink: 0; }
+@media (max-width: 600px) { .publish-dialog-head, .publish-dialog-foot { padding: 12px; } .publish-dialog-body { padding: 8px 12px; } .publish-dialog-foot .muted { font-size: 11px; } }

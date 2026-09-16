@@ -31,7 +31,7 @@ export function WebsiteContent({ goTo }) {
       <div className="content-intro-copy">
         <span className="review-badge">Website content collection</span>
         <h2>Hospital content workspace</h2>
-        <p>Manage hospital information, facilities, packages and patient services. Supplied documents are organised into editable drafts with their source references.</p>
+        <p>Manage hospital information, facilities, packages and patient services. Click Review & publish beside any hidden page to read its content, confirm the review points and publish. Use Edit content for corrections.</p>
       </div>
       <div className="content-actions">
         <button className="btn btn-primary" onClick={importDrafts} disabled={busy || !preview || !pending}>
