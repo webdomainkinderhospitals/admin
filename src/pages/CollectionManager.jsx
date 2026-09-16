@@ -7,7 +7,7 @@ import { locationLabel } from '../locations.js';
 
 // Generic list + one entry form for a collection (procedures, news, stories…).
 // The form is the shared RecordForm, so every screen looks and behaves alike.
-export function CollectionManager({ config }) {
+export function CollectionManager({ config, category = '' }) {
   const [items, setItems] = useState(null); // null = loading
   const [editing, setEditing] = useState(null); // null | {} (new) | item
   const [query, setQuery] = useState('');
@@ -55,7 +55,7 @@ export function CollectionManager({ config }) {
       if (config.key === 'locations') clearLocationCache();
       setEditing(null);
       await load();
-      toast(`${cap(singular)} saved — live on the website within a minute`);
+      toast(body.published ? `${cap(singular)} saved — published changes appear within a minute` : `${cap(singular)} saved as a draft`);
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -89,10 +89,12 @@ export function CollectionManager({ config }) {
   function blank() {
     const obj = {};
     for (const f of config.fields) if (f.default !== undefined) obj[f.name] = f.default;
+    if (category) obj.category = category;
     return obj;
   }
 
   const list = (items || []).filter((item) => {
+    if (category && item.category !== category) return false;
     if (!query) return true;
     const hay = Object.values(item).join(' ').toLowerCase();
     return hay.includes(query.toLowerCase());
@@ -193,6 +195,7 @@ export function CollectionManager({ config }) {
                   )}
                   <td>
                     <button type="button" className="row-title" onClick={() => setEditing(item)}>{item[config.titleField]}</button>
+                    {item.reviewNotes && <div className="review-badge">Review needed</div>}
                     <div className="muted small">
                       {[
                         item.category, item.designation, item.relation,
