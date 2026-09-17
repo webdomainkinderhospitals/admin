@@ -266,7 +266,7 @@ const REVIEW_SECTION = {
       hint: 'Resolve each point, then clear these notes before publishing. Notes are visible only to staff.' },
   ],
 };
-export const PAGE_CATEGORIES = ['About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
+export const PAGE_CATEGORIES = ['Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
 COLLECTIONS.push({
   key: 'pages', label: 'Content Pages', singular: 'page', icon: 'news', titleField: 'title',
   sections: [
