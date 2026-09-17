@@ -1301,3 +1301,9 @@ input:focus, textarea:focus, select:focus {
 .publish-dialog-foot .checkbox { align-items: flex-start; }
 .publish-dialog-foot .checkbox input { flex-shrink: 0; }
 @media (max-width: 600px) { .publish-dialog-head, .publish-dialog-foot { padding: 12px; } .publish-dialog-body { padding: 8px 12px; } .publish-dialog-foot .muted { font-size: 11px; } }
+
+.kochi-content-guide { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 28px; margin-bottom: 24px; border-top: 3px solid #6d49c9; }
+.kochi-content-guide h2 { margin: 12px 0; }
+.kochi-content-guide p { max-width: 720px; line-height: 1.75; }
+.kochi-content-guide button { flex-shrink: 0; }
+@media (max-width: 700px) { .kochi-content-guide { flex-direction: column; align-items: flex-start; padding: 20px; } }

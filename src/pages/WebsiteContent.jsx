@@ -11,6 +11,7 @@ export function WebsiteContent({ goTo }) {
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState('');
   const [revision, setRevision] = useState(0);
+  const kochiPages = preview?.items.filter((r) => r.collection === 'pages' && r.location === 'Kochi') || [];
   async function load() {
     try { setPreview(await api('/api/website-import')); }
     catch (e) { setError(e.message); }
@@ -56,6 +57,14 @@ export function WebsiteContent({ goTo }) {
         </table></div>
       </details>
     </>}
+    <section className="card kochi-content-guide">
+      <div><span className="review-badge">Kinder Kochi</span><h2>Kochi care pages</h2>
+        <p>General &amp; Laparoscopic Surgery · Obstetrics &amp; Gynaecology · Premium Birthing Centre · Water Birthing Suite</p>
+        <p className="muted small">Import the new drafts above, then review the text, FAQs and hospital details. Approved pages appear in the Kochi care section of the website.</p>
+        {kochiPages.length > 0 && <p className="muted small">{kochiPages.filter((r) => r.action === 'create').length} Kochi pages awaiting import</p>}
+      </div>
+      <button className="btn btn-primary" onClick={() => { setCategory('Kochi Care'); document.getElementById('content-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Review Kochi pages →</button>
+    </section>
     <div className="content-section-filter"><label htmlFor="content-category">Content section</label>
       <select id="content-category" value={category} onChange={(e) => setCategory(e.target.value)}><option value="">All sections</option>{PAGE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
     </div>
