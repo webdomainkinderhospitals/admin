@@ -200,7 +200,7 @@ export function buildHospital(data, loc) {
       slots: [
         record('locations', loc, 'tagline', { kind: 'text', label: 'Tagline', where: 'One line under the page title' }),
         record('locations', loc, 'description', { kind: 'textarea', label: 'About this centre', where: '“About” paragraph on the page', rows: 5 }),
-        record('locations', loc, 'highlights', { kind: 'textarea', label: 'Highlights', where: 'Tick-list next to the About text', hint: 'One highlight per line, e.g. “Level III NICU”.', rows: 5 }),
+        record('locations', loc, 'highlights', { kind: 'textarea', label: 'Facilities & highlights', where: 'Tick-list next to the About text', hint: 'One per line. Add a description after a dash — “Level 3 NICU — five beds, round-the-clock neonatal care” — and the name is shown in bold above it.', rows: 5 }),
         record('locations', loc, 'since', { kind: 'text', label: 'Eyebrow tag', where: 'Small tag above the title, e.g. “Since 2011”', required: false }),
       ],
     },
@@ -214,6 +214,7 @@ export function buildHospital(data, loc) {
         record('locations', loc, 'mapUrl', { kind: 'text', label: 'Google Maps link', where: '“Directions” link', hint: 'Paste the share link from Google Maps.' }),
         record('locations', loc, 'website', { kind: 'text', label: 'Own website URL', where: '“Official website” link', required: false }),
         record('locations', loc, 'websiteLabel', { kind: 'text', label: 'Website link text', where: 'Text of that link', required: false }),
+        record('locations', loc, 'bookingUrl', { kind: 'text', label: 'Book-an-appointment link', where: '“Book Appointment” buttons on this page', hint: 'Leave empty to use the group WhatsApp booking.', required: false }),
       ],
     },
     {
