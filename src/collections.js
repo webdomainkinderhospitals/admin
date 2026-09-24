@@ -269,7 +269,7 @@ const REVIEW_SECTION = {
       hint: 'Resolve each point, then clear these notes before publishing. Notes are visible only to staff.' },
   ],
 };
-export const PAGE_CATEGORIES = ['Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
+export const PAGE_CATEGORIES = ['Celebrate Pregnancy', 'Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
 COLLECTIONS.push({
   key: 'pages', label: 'Content Pages', singular: 'page', icon: 'news', titleField: 'title',
   sections: [
@@ -283,7 +283,9 @@ COLLECTIONS.push({
       { name: 'excerpt', label: 'Short introduction', type: 'textarea', rows: 3, wide: true },
       { name: 'body', label: 'Full content', type: 'textarea', rows: 16, wide: true, required: true,
         hint: 'Separate paragraphs with a blank line. Start a heading with ## and each list item with -. HTML is displayed as text.' },
-      { name: 'imageUrl', label: 'Page photograph', type: 'image', folder: 'general', wide: true },
+      { name: 'imageUrl', label: 'Page hero photograph', type: 'image', folder: 'general', wide: true },
+      { name: 'galleryUrls', label: 'Gallery photographs', type: 'textarea', rows: 5, wide: true,
+        hint: 'One HTTPS image URL per line. Upload photographs in Media Library, then paste their URLs here. The published Kochi pages show these as a gallery.' },
     ] },
     REVIEW_SECTION,
     { title: 'Order and visibility', fields: [ORDER, { ...VISIBILITY.fields[0], default: false }] },
