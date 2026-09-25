@@ -111,6 +111,19 @@ export const COLLECTIONS = [
         ],
       },
       {
+        title: 'Campaign banner',
+        hint: 'Optional finished artwork (text built into the image) shown uncropped under the contact strip on this hospital’s page. Remove the image to hide it.',
+        fields: [
+          { name: 'promoImageUrl', label: 'Banner image', type: 'image', folder: 'banners', wide: true,
+            size: '1920 × 720 px · wide landscape · JPG' },
+          { name: 'promoLink', label: 'Banner link (optional)', type: 'text', wide: true, placeholder: 'tel:+914846660000 or https://…',
+            hint: 'Where a click on the banner goes. Leave empty for a banner that is not clickable.' },
+          { name: 'promoAlt', label: 'What the banner says', type: 'textarea', rows: 2, wide: true,
+            placeholder: 'Congrats! You are going to be a father…',
+            hint: 'Read aloud by screen readers, since the text is part of the image.' },
+        ],
+      },
+      {
         title: 'Contact & links',
         fields: [
           { name: 'city', label: 'City', type: 'text', placeholder: 'Kochi' },
@@ -313,5 +326,8 @@ export const SETTING_FIELDS = [
   { name: 'heroTitle', label: 'Headline', type: 'text', wide: true, placeholder: 'Kindness at the heart of <em>every tiny heartbeat</em>', hint: 'Wrap words in <em> … </em> to highlight them in pink.' },
   { name: 'heroSubtitle', label: 'Sub-text', type: 'textarea', rows: 3, wide: true, hint: 'Leave empty and the website writes one from your live list of hospitals.' },
   { name: 'heroImageUrl', label: 'Hero photo', type: 'image', folder: 'hero', wide: true, size: '1920 × 900 px · wide landscape' },
+  { name: 'homePromoImageUrl', label: 'Campaign banner', type: 'image', folder: 'banners', wide: true, size: '1920 × 720 px · wide landscape · JPG', hint: 'Finished artwork with its text built in — shown uncropped under the homepage hero. Remove the image to hide the banner.' },
+  { name: 'homePromoLink', label: 'Banner link (optional)', type: 'text', wide: true, placeholder: 'tel:+914846660000 or https://…', hint: 'Where a click on the banner goes. Leave empty for a banner that is not clickable.' },
+  { name: 'homePromoAlt', label: 'What the banner says', type: 'textarea', rows: 2, wide: true, placeholder: 'Congrats! You are going to be a mother…', hint: 'Read aloud by screen readers and used by search engines, since the text is part of the image.' },
   { name: 'logoUrl', label: 'Logo', type: 'image', folder: 'corporate', wide: true, size: '400 × 120 px · PNG with transparent background', hint: 'Leave empty to keep the built-in Kinder logo.' },
 ];
