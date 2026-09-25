@@ -13,6 +13,11 @@ const SECTIONS = [
     fields: ['heroTitle', 'heroSubtitle', 'heroImageUrl'],
   },
   {
+    title: 'Homepage campaign banner',
+    hint: 'A full-width promotional artwork shown just below the homepage hero. Leave the image empty to hide it.',
+    fields: ['homePromoImageUrl', 'homePromoLink', 'homePromoAlt'],
+  },
+  {
     title: 'Brand & contact details',
     hint: 'Used in the header, footer, contact page and chat assistant of every site.',
     fields: ['siteName', 'tagline', 'helplinePhone', 'emergencyPhone', 'email', 'logoUrl'],

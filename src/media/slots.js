@@ -36,6 +36,7 @@ export const STATUS_LABEL = {
 export const SIZES = {
   hero: '1920 × 900 px · landscape · JPG',
   banner: '1920 × 800 px · landscape · JPG',
+  promo: '1920 × 720 px · landscape · JPG, text built into the artwork',
   logo: '400 × 120 px · PNG with transparent background',
   card: '1200 × 800 px · landscape · JPG',
   portrait: '800 × 800 px · square, face centred · JPG',
@@ -97,6 +98,23 @@ export function buildCorporate(data) {
           kind: 'image', label: 'Logo', folder: 'corporate', size: SIZES.logo, required: false,
           where: 'Header and footer of the corporate site and every hospital sub-website',
           hint: 'Leave empty to keep the built-in Kinder logo.',
+        }),
+      ],
+    },
+    {
+      title: 'Homepage campaign banner',
+      hint: 'Finished artwork shown uncropped just below the homepage hero. Leave the image empty to hide it.',
+      slots: [
+        setting(settings, 'homePromoImageUrl', {
+          kind: 'image', label: 'Campaign banner', folder: 'banners', size: SIZES.promo, required: false,
+          where: 'Full-width banner under the homepage hero',
+        }),
+        setting(settings, 'homePromoLink', {
+          kind: 'text', label: 'Banner link', required: false, where: 'Where a click on the banner goes',
+          hint: 'e.g. tel:+914846660000 or a page URL. Leave empty for no link.',
+        }),
+        setting(settings, 'homePromoAlt', {
+          kind: 'textarea', label: 'What the banner says', required: false, where: 'Screen readers & search engines',
         }),
       ],
     },
@@ -164,7 +182,7 @@ export function buildCorporate(data) {
     path: '',
     groups,
     related,
-    folders: ['hero', 'corporate', 'locations', 'general'],
+    folders: ['hero', 'banners', 'corporate', 'locations', 'general'],
     uploadFolder: 'corporate',
   };
 }
@@ -191,6 +209,23 @@ export function buildHospital(data, loc) {
         record('locations', loc, 'imageUrl', {
           kind: 'image', label: 'Card photo', folder: slug, size: SIZES.card,
           where: 'Homepage hospital cards and the header menu', subject: `Kinder ${loc.name}`,
+        }),
+      ],
+    },
+    {
+      title: 'Campaign banner',
+      hint: 'Optional finished artwork shown uncropped under the contact strip. Leave the image empty to hide it.',
+      slots: [
+        record('locations', loc, 'promoImageUrl', {
+          kind: 'image', label: 'Campaign banner', folder: slug, size: SIZES.promo, required: false,
+          where: `Under the contact strip on the Kinder ${loc.name} page`, subject: `Kinder ${loc.name}`,
+        }),
+        record('locations', loc, 'promoLink', {
+          kind: 'text', label: 'Banner link', required: false, where: 'Where a click on the banner goes',
+          hint: 'e.g. tel:+914846660000 or a page URL. Leave empty for no link.',
+        }),
+        record('locations', loc, 'promoAlt', {
+          kind: 'textarea', label: 'What the banner says', required: false, where: 'Screen readers & search engines', rows: 2,
         }),
       ],
     },
@@ -371,9 +406,11 @@ export function usageMap(data) {
   const s = data.settings || {};
   add(s.heroImageUrl, 'Homepage hero');
   add(s.logoUrl, 'Site logo');
+  add(s.homePromoImageUrl, 'Homepage campaign banner');
   for (const l of data.locations || []) {
     add(l.heroImageUrl, `Kinder ${l.name} banner`);
     add(l.imageUrl, `Kinder ${l.name} card`);
+    add(l.promoImageUrl, `Kinder ${l.name} campaign banner`);
   }
   for (const d of data.doctors || []) add(d.imageUrl, d.name);
   for (const n of data.news || []) add(n.imageUrl, `News: ${n.title}`);
