@@ -4,12 +4,12 @@ import { COLLECTIONS, PAGE_CATEGORIES } from '../collections';
 import { CollectionManager } from './CollectionManager';
 import { clearSpecialityCache } from '../fields';
 
-export function WebsiteContent({ goTo }) {
+export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }) {
   const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(initialCategory);
   const [revision, setRevision] = useState(0);
   const kochiPages = preview?.items.filter((r) => r.collection === 'pages' && r.location === 'Kochi') || [];
   async function load() {
@@ -65,9 +65,16 @@ export function WebsiteContent({ goTo }) {
       </div>
       <button className="btn btn-primary" onClick={() => { setCategory('Kochi Care'); document.getElementById('content-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Review Kochi pages →</button>
     </section>
+    <section className="card kochi-content-guide pregnancy-content-guide">
+      <div><span className="review-badge">Kochi website · featured menu</span><h2>Celebrate Pregnancy &amp; Premium Birthing Centre</h2>
+        <p>Tharattazhaku and WOW MOM are in Celebrate Pregnancy. Water Birth and Premium Birthing Centre are in Kochi Care. Each published page appears in the highlighted Kochi website menu.</p>
+        <p className="muted small">Use the hero photo and gallery URLs in each page's editor. Import new drafts above; resolve review notes and publish each page when approved.</p>
+      </div>
+      <button className="btn btn-primary" onClick={() => { setCategory('Celebrate Pregnancy'); document.getElementById('content-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Review celebrations →</button>
+    </section>
     <div className="content-section-filter"><label htmlFor="content-category">Content section</label>
       <select id="content-category" value={category} onChange={(e) => setCategory(e.target.value)}><option value="">All sections</option>{PAGE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
     </div>
-    <CollectionManager key={revision} config={COLLECTIONS.find((c) => c.key === 'pages')} category={category} />
+    <CollectionManager key={revision} config={COLLECTIONS.find((c) => c.key === 'pages')} category={category} focusSlugs={category === initialCategory ? focusSlugs : null} />
   </div>;
 }

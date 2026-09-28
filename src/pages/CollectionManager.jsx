@@ -8,7 +8,7 @@ import { locationLabel } from '../locations.js';
 
 // Generic list + one entry form for a collection (procedures, news, stories…).
 // The form is the shared RecordForm, so every screen looks and behaves alike.
-export function CollectionManager({ config, category = '' }) {
+export function CollectionManager({ config, category = '', focusSlugs = null }) {
   const [items, setItems] = useState(null); // null = loading
   const [editing, setEditing] = useState(null); // null | {} (new) | item
   const [query, setQuery] = useState('');
@@ -82,13 +82,13 @@ export function CollectionManager({ config, category = '' }) {
     return obj;
   }
 
-  const list = (items || []).filter((item) => {
-    if (category && item.category !== category) return false;
+  const scoped = (items || []).filter((item) => (!category || item.category === category) && (!focusSlugs || focusSlugs.includes(item.slug)));
+  const list = scoped.filter((item) => {
     if (!query) return true;
     const hay = Object.values(item).join(' ').toLowerCase();
     return hay.includes(query.toLowerCase());
   });
-  const hidden = (items || []).filter((i) => i.published === false).length;
+  const hidden = scoped.filter((i) => i.published === false).length;
   const hasImage = config.fields.some((f) => f.type === 'image');
 
   return (
@@ -96,7 +96,7 @@ export function CollectionManager({ config, category = '' }) {
       <div className="page-head">
         <div className="page-head-text">
           <p className="muted">
-            {items === null ? 'Loading…' : `${items.length} ${items.length === 1 ? singular : config.label.toLowerCase()}${hidden ? ` · ${hidden} hidden` : ''}`}
+            {items === null ? 'Loading…' : `${scoped.length} ${scoped.length === 1 ? singular : config.label.toLowerCase()}${hidden ? ` · ${hidden} hidden` : ''}`}
           </p>
         </div>
         <div className="page-head-tools">
@@ -110,9 +110,9 @@ export function CollectionManager({ config, category = '' }) {
               aria-label={`Search ${config.label}`}
             />
           </div>
-          <button className="btn btn-primary" onClick={() => setEditing(blank())}>
+          {!focusSlugs && <button className="btn btn-primary" onClick={() => setEditing(blank())}>
             <Icon name="plus" size={16} /> Add {singular}
-          </button>
+          </button>}
         </div>
       </div>
       {error && <div className="error-banner" role="alert"><Icon name="alert" size={16} /> {error}</div>}
@@ -148,13 +148,13 @@ export function CollectionManager({ config, category = '' }) {
         ) : list.length === 0 ? (
           <div className="empty-state">
             <Icon name={config.icon} size={30} />
-            {items.length === 0 ? (
+            {scoped.length === 0 ? (
               <>
-                <strong>No {config.label.toLowerCase()} yet</strong>
-                <p>Add your first {singular} — it appears on the website within a minute.</p>
-                <button className="btn btn-primary" onClick={() => setEditing(blank())}>
+                <strong>{focusSlugs ? 'No featured pages imported yet' : `No ${config.label.toLowerCase()} yet`}</strong>
+                <p>{focusSlugs ? 'Use Import new drafts above to add the supplied Kinder Kochi pages.' : `Add your first ${singular} — it appears on the website within a minute.`}</p>
+                {!focusSlugs && <button className="btn btn-primary" onClick={() => setEditing(blank())}>
                   <Icon name="plus" size={16} /> Add {singular}
-                </button>
+                </button>}
               </>
             ) : (
               <>

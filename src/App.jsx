@@ -118,6 +118,8 @@ const NAV_GROUPS = [
       { key: 'settings', label: 'Site Settings', icon: 'settings', desc: 'Hero, logo, contact' },
       { key: 'services-doctors', label: 'Services & Doctors', icon: 'stethoscope', desc: 'Specialities & doctors' },
       { key: 'website-content', label: 'Content Library', icon: 'news', desc: 'Pages & supplied content' },
+      { key: 'pregnancy-content', label: 'Celebrate Pregnancy', icon: 'heart', desc: 'Kochi events & pregnancy club' },
+      { key: 'birthing-content', label: 'Premium Birthing Centre', icon: 'building', desc: 'Kochi birthing & water birth' },
       navItem('procedures', 'Treatments'),
       navItem('news', 'Posts & camps'),
       navItem('testimonials', 'Patient stories'),
@@ -263,6 +265,8 @@ export default function App() {
         <main className="content">
           {page === 'dashboard' && <Dashboard goTo={setPage} />}
           {page === 'website-content' && <WebsiteContent goTo={setPage} />}
+          {page === 'pregnancy-content' && <WebsiteContent key="pregnancy" goTo={setPage} initialCategory="Celebrate Pregnancy" focusSlugs={['kochi-tharattazhaku', 'kochi-wow-mom']} />}
+          {page === 'birthing-content' && <WebsiteContent key="birthing" goTo={setPage} initialCategory="Kochi Care" focusSlugs={['kochi-premium-birthing-centre', 'kochi-water-birthing-suite']} />}
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary goTo={setPage} />}
           {page === 'services-doctors' && <ServicesDoctors />}

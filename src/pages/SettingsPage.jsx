@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api.js';
-import { SETTING_FIELDS } from '../collections.js';
+import { SETTING_FIELDS, PROMO_SLOTS } from '../collections.js';
 import { FieldRow } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
@@ -11,6 +11,11 @@ const SECTIONS = [
     title: 'Homepage hero',
     hint: 'The big banner visitors see first on the corporate homepage.',
     fields: ['heroTitle', 'heroSubtitle', 'heroImageUrl'],
+  },
+  {
+    title: 'Homepage campaign banners',
+    hint: 'Up to three promotional artworks shown just below the homepage hero. Two or more rotate automatically as a slideshow. Leave an image empty to drop that slide.',
+    fields: PROMO_SLOTS.flatMap(({ n }) => [`homePromo${n}ImageUrl`, `homePromo${n}Link`, `homePromo${n}Alt`]),
   },
   {
     title: 'Brand & contact details',

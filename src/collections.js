@@ -39,6 +39,20 @@ const VISIBILITY = {
 const ORDER = { name: 'sortOrder', label: 'Display order', type: 'number', placeholder: '0',
   hint: 'Lower numbers appear first. Leave 0 to keep the order they were added.' };
 
+// Campaign banners: up to three slides that rotate. Slot 1 keeps the original
+// field names (promoImageUrl…); slots 2 and 3 are promo2…, promo3….
+export const PROMO_SLOTS = [{ n: '', label: 'Banner 1' }, { n: '2', label: 'Banner 2' }, { n: '3', label: 'Banner 3' }];
+function promoFields(prefix, label, example) {
+  return [
+    { name: `${prefix}ImageUrl`, label: `${label} — image`, type: 'image', folder: 'banners', wide: true,
+      size: '1920 × 720 px · wide landscape · JPG' },
+    { name: `${prefix}Link`, label: `${label} — link (optional)`, type: 'text', placeholder: 'tel:+914846660000 or https://…',
+      hint: 'Where a click on this banner goes. Leave empty for no link.' },
+    { name: `${prefix}Alt`, label: `${label} — what it says`, type: 'text', placeholder: `Congrats! You are going to be a ${example}…`,
+      hint: 'Read aloud by screen readers, since the text is part of the image.' },
+  ];
+}
+
 export const COLLECTIONS = [
   {
     key: 'specialities',
@@ -84,6 +98,9 @@ export const COLLECTIONS = [
             hint: 'Shown with the “Kinder” prefix, e.g. “Kinder Kochi”.' },
           { name: 'slug', label: 'Page address', type: 'text', placeholder: 'kochi',
             hint: 'Becomes yoursite.com/hospitals/kochi. Lower-case letters and dashes only; leave empty to use the name.' },
+          { name: 'kind', label: 'Type', type: 'select', default: 'hospital',
+            options: [{ value: 'hospital', label: 'Hospital' }, { value: 'clinic', label: 'Clinic' }],
+            hint: 'Clinics are also listed in the website’s “Clinics” menu.' },
           { name: 'since', label: 'Small tag above the title', type: 'text', placeholder: 'e.g. Since 2018' },
           { name: 'international', label: 'International centre', type: 'checkbox', default: false, checkboxLabel: 'Yes — outside India',
             hint: 'Adds an “International” badge to its card.' },
@@ -109,6 +126,11 @@ export const COLLECTIONS = [
           { name: 'heroImageUrl', label: 'Page banner (optional)', type: 'image', folder: 'locations', wide: true,
             size: '1920 × 800 px · wide landscape', hint: 'Full-width photo at the top of this hospital’s own page.' },
         ],
+      },
+      {
+        title: 'Campaign banners',
+        hint: 'Up to three finished artworks (text built into the image), shown uncropped under the contact strip. Two or more rotate automatically as a slideshow. Remove an image to drop that slide.',
+        fields: PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`promo${n}`, label, 'father')),
       },
       {
         title: 'Contact & links',
@@ -272,7 +294,7 @@ const REVIEW_SECTION = {
       hint: 'Resolve each point, then clear these notes before publishing. Notes are visible only to staff.' },
   ],
 };
-export const PAGE_CATEGORIES = ['Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
+export const PAGE_CATEGORIES = ['Celebrate Pregnancy', 'Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
 COLLECTIONS.push({
   key: 'pages', label: 'Content Pages', singular: 'page', icon: 'news', titleField: 'title',
   sections: [
@@ -286,7 +308,9 @@ COLLECTIONS.push({
       { name: 'excerpt', label: 'Short introduction', type: 'textarea', rows: 3, wide: true },
       { name: 'body', label: 'Full content', type: 'textarea', rows: 16, wide: true, required: true,
         hint: 'Separate paragraphs with a blank line. Start a heading with ## and each list item with -. HTML is displayed as text.' },
-      { name: 'imageUrl', label: 'Page photograph', type: 'image', folder: 'general', wide: true },
+      { name: 'imageUrl', label: 'Page hero photograph', type: 'image', folder: 'general', wide: true },
+      { name: 'galleryUrls', label: 'Gallery photographs', type: 'textarea', rows: 5, wide: true,
+        hint: 'One HTTPS image URL per line. Upload photographs in Media Library, then paste their URLs here. The published Kochi pages show these as a gallery.' },
     ] },
     REVIEW_SECTION,
     { title: 'Order and visibility', fields: [ORDER, { ...VISIBILITY.fields[0], default: false }] },
@@ -314,5 +338,6 @@ export const SETTING_FIELDS = [
   { name: 'heroTitle', label: 'Headline', type: 'text', wide: true, placeholder: 'Kindness at the heart of <em>every tiny heartbeat</em>', hint: 'Wrap words in <em> … </em> to highlight them in pink.' },
   { name: 'heroSubtitle', label: 'Sub-text', type: 'textarea', rows: 3, wide: true, hint: 'Leave empty and the website writes one from your live list of hospitals.' },
   { name: 'heroImageUrl', label: 'Hero photo', type: 'image', folder: 'hero', wide: true, size: '1920 × 900 px · wide landscape' },
+  ...PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`homePromo${n}`, label, 'mother')),
   { name: 'logoUrl', label: 'Logo', type: 'image', folder: 'corporate', wide: true, size: '400 × 120 px · PNG with transparent background', hint: 'Leave empty to keep the built-in Kinder logo.' },
 ];

@@ -1307,3 +1307,4 @@ input:focus, textarea:focus, select:focus {
 .kochi-content-guide p { max-width: 720px; line-height: 1.75; }
 .kochi-content-guide button { flex-shrink: 0; }
 @media (max-width: 700px) { .kochi-content-guide { flex-direction: column; align-items: flex-start; padding: 20px; } }
+.hosp-clinic-badge { top: auto !important; bottom: 10px; background: #0e8c7b !important; color: #fff !important; }

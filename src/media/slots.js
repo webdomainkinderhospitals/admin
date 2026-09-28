@@ -36,12 +36,16 @@ export const STATUS_LABEL = {
 export const SIZES = {
   hero: '1920 × 900 px · landscape · JPG',
   banner: '1920 × 800 px · landscape · JPG',
+  promo: '1920 × 720 px · landscape · JPG, text built into the artwork',
   logo: '400 × 120 px · PNG with transparent background',
   card: '1200 × 800 px · landscape · JPG',
   portrait: '800 × 800 px · square, face centred · JPG',
   cover: '1200 × 675 px · landscape · JPG',
   square: '800 × 800 px · square · JPG',
 };
+
+// Campaign banner slides: slot 1 uses the original field names.
+const PROMO = [{ n: '', label: 'Banner 1' }, { n: '2', label: 'Banner 2' }, { n: '3', label: 'Banner 3' }];
 
 function slot(base) {
   const required = base.required !== false;
@@ -99,6 +103,23 @@ export function buildCorporate(data) {
           hint: 'Leave empty to keep the built-in Kinder logo.',
         }),
       ],
+    },
+    {
+      title: 'Homepage campaign banners',
+      hint: 'Up to three finished artworks shown uncropped below the homepage hero. Two or more rotate as a slideshow.',
+      slots: PROMO.flatMap(({ n, label }) => [
+        setting(settings, `homePromo${n}ImageUrl`, {
+          kind: 'image', label, folder: 'banners', size: SIZES.promo, required: false,
+          where: 'Slideshow under the homepage hero',
+        }),
+        setting(settings, `homePromo${n}Link`, {
+          kind: 'text', label: `${label} link`, required: false, where: 'Where a click on this banner goes',
+          hint: 'e.g. tel:+914846660000 or a page URL. Leave empty for no link.',
+        }),
+        setting(settings, `homePromo${n}Alt`, {
+          kind: 'textarea', label: `${label} — what it says`, required: false, where: 'Screen readers & search engines', rows: 2,
+        }),
+      ]),
     },
     {
       title: 'Contact details & announcement',
@@ -164,7 +185,7 @@ export function buildCorporate(data) {
     path: '',
     groups,
     related,
-    folders: ['hero', 'corporate', 'locations', 'general'],
+    folders: ['hero', 'banners', 'corporate', 'locations', 'general'],
     uploadFolder: 'corporate',
   };
 }
@@ -193,6 +214,23 @@ export function buildHospital(data, loc) {
           where: 'Homepage hospital cards and the header menu', subject: `Kinder ${loc.name}`,
         }),
       ],
+    },
+    {
+      title: 'Campaign banners',
+      hint: 'Up to three finished artworks shown uncropped under the contact strip. Two or more rotate as a slideshow.',
+      slots: PROMO.flatMap(({ n, label }) => [
+        record('locations', loc, `promo${n}ImageUrl`, {
+          kind: 'image', label, folder: slug, size: SIZES.promo, required: false,
+          where: `Slideshow under the contact strip on the Kinder ${loc.name} page`, subject: `Kinder ${loc.name}`,
+        }),
+        record('locations', loc, `promo${n}Link`, {
+          kind: 'text', label: `${label} link`, required: false, where: 'Where a click on this banner goes',
+          hint: 'e.g. tel:+914846660000 or a page URL. Leave empty for no link.',
+        }),
+        record('locations', loc, `promo${n}Alt`, {
+          kind: 'textarea', label: `${label} — what it says`, required: false, where: 'Screen readers & search engines', rows: 2,
+        }),
+      ]),
     },
     {
       title: 'Page text',
@@ -371,9 +409,11 @@ export function usageMap(data) {
   const s = data.settings || {};
   add(s.heroImageUrl, 'Homepage hero');
   add(s.logoUrl, 'Site logo');
+  for (const { n, label } of PROMO) add(s[`homePromo${n}ImageUrl`], `Homepage campaign ${label.toLowerCase()}`);
   for (const l of data.locations || []) {
     add(l.heroImageUrl, `Kinder ${l.name} banner`);
     add(l.imageUrl, `Kinder ${l.name} card`);
+    for (const { n, label } of PROMO) add(l[`promo${n}ImageUrl`], `Kinder ${l.name} campaign ${label.toLowerCase()}`);
   }
   for (const d of data.doctors || []) add(d.imageUrl, d.name);
   for (const n of data.news || []) add(n.imageUrl, `News: ${n.title}`);

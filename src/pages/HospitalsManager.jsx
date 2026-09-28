@@ -172,6 +172,7 @@ export function HospitalsManager({ goTo = () => {} }) {
                 >
                   {!on && <span className="hosp-off-badge"><Icon name="eyeOff" size={13} /> Hidden</span>}
                   {loc.international && <span className="hosp-intl-badge">International</span>}
+                  {loc.kind === 'clinic' && <span className="hosp-intl-badge hosp-clinic-badge">Clinic</span>}
                 </div>
                 <div className="hosp-card-body">
                   <div className="hosp-card-title">
