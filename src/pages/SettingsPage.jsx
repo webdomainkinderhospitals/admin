@@ -13,6 +13,11 @@ const SECTIONS = [
     fields: ['heroTitle', 'heroSubtitle', 'heroImageUrl'],
   },
   {
+    title: 'Homepage slider banners',
+    hint: 'Finished artworks for the big slider at the top of the homepage — text and logo included in the image, 1600 × 600 px or larger at the same 8:3 shape. When at least one image is set, the slider shows these whole, instead of the headline slides above. Leave all three empty to go back to the headline slides.',
+    fields: PROMO_SLOTS.flatMap(({ n }) => [`heroSlide${n}ImageUrl`, `heroSlide${n}Link`, `heroSlide${n}Alt`]),
+  },
+  {
     title: 'Homepage campaign banners',
     hint: 'Up to three promotional artworks shown just below the homepage hero. Two or more rotate automatically as a slideshow. Leave an image empty to drop that slide.',
     fields: PROMO_SLOTS.flatMap(({ n }) => [`homePromo${n}ImageUrl`, `homePromo${n}Link`, `homePromo${n}Alt`]),
