@@ -105,6 +105,23 @@ export function buildCorporate(data) {
       ],
     },
     {
+      title: 'Homepage slider banners',
+      hint: 'Finished artworks for the slider at the top of the homepage, shown whole. When any is set they replace the headline slides.',
+      slots: PROMO.flatMap(({ n, label }) => [
+        setting(settings, `heroSlide${n}ImageUrl`, {
+          kind: 'image', label: `Slider ${label.toLowerCase()}`, folder: 'banners', size: SIZES.promo, required: false,
+          where: 'Top of the homepage',
+        }),
+        setting(settings, `heroSlide${n}Link`, {
+          kind: 'text', label: `Slider ${label.toLowerCase()} link`, required: false, where: 'Where a click on this banner goes',
+          hint: 'e.g. /book or a page URL. Leave empty for no link.',
+        }),
+        setting(settings, `heroSlide${n}Alt`, {
+          kind: 'textarea', label: `Slider ${label.toLowerCase()} — what it says`, required: false, where: 'Screen readers & search engines', rows: 2,
+        }),
+      ]),
+    },
+    {
       title: 'Homepage campaign banners',
       hint: 'Up to three finished artworks shown uncropped below the homepage hero. Two or more rotate as a slideshow.',
       slots: PROMO.flatMap(({ n, label }) => [
@@ -409,6 +426,7 @@ export function usageMap(data) {
   const s = data.settings || {};
   add(s.heroImageUrl, 'Homepage hero');
   add(s.logoUrl, 'Site logo');
+  for (const { n, label } of PROMO) add(s[`heroSlide${n}ImageUrl`], `Homepage slider ${label.toLowerCase()}`);
   for (const { n, label } of PROMO) add(s[`homePromo${n}ImageUrl`], `Homepage campaign ${label.toLowerCase()}`);
   for (const l of data.locations || []) {
     add(l.heroImageUrl, `Kinder ${l.name} banner`);

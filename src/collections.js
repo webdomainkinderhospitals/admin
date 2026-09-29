@@ -338,6 +338,7 @@ export const SETTING_FIELDS = [
   { name: 'heroTitle', label: 'Headline', type: 'text', wide: true, placeholder: 'Kindness at the heart of <em>every tiny heartbeat</em>', hint: 'Wrap words in <em> … </em> to highlight them in pink.' },
   { name: 'heroSubtitle', label: 'Sub-text', type: 'textarea', rows: 3, wide: true, hint: 'Leave empty and the website writes one from your live list of hospitals.' },
   { name: 'heroImageUrl', label: 'Hero photo', type: 'image', folder: 'hero', wide: true, size: '1920 × 900 px · wide landscape' },
+  ...PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`heroSlide${n}`, `Slider ${label.toLowerCase()}`, 'mother')),
   ...PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`homePromo${n}`, label, 'mother')),
   { name: 'logoUrl', label: 'Logo', type: 'image', folder: 'corporate', wide: true, size: '400 × 120 px · PNG with transparent background', hint: 'Leave empty to keep the built-in Kinder logo.' },
 ];
