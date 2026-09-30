@@ -28,6 +28,11 @@ export const SERVICE_GROUPS = [
   'Allied & Wellness',
 ];
 
+// Headings a hospital's own departments can be grouped under on its page.
+// Only used for specialities tagged to a hospital; the corporate Services
+// page shows the groups above.
+export const HOSPITAL_GROUPS = ['Multispeciality Services', 'Women & Fertility Centre'];
+
 const VISIBILITY = {
   title: 'Visibility',
   fields: [
@@ -74,9 +79,13 @@ export const COLLECTIONS = [
       {
         title: 'Where it appears',
         fields: [
-          { name: 'category', label: 'Corporate services group', type: 'select', default: '',
-            options: [{ value: '', label: 'Not on the corporate Services page (hospital-only)' }, ...SERVICE_GROUPS],
-            hint: 'Puts it under that heading on the corporate Services page and header menu.' },
+          { name: 'category', label: 'Group heading', type: 'select', default: '',
+            options: [
+              { value: '', label: 'No group' },
+              ...SERVICE_GROUPS,
+              ...HOSPITAL_GROUPS.map((g) => ({ value: g, label: `${g} (hospital page)` })),
+            ],
+            hint: 'The heading it is listed under — on the corporate Services page, or on its hospital’s page when it is tagged to one hospital (e.g. Kochi’s “Multispeciality Services” and “Women & Fertility Centre”).' },
           { name: 'location', label: 'Where it appears', type: 'location', wide: true },
           ORDER,
         ],
@@ -101,7 +110,12 @@ export const COLLECTIONS = [
           { name: 'kind', label: 'Type', type: 'select', default: 'hospital',
             options: [{ value: 'hospital', label: 'Hospital' }, { value: 'clinic', label: 'Clinic' }],
             hint: 'Clinics are also listed in the website’s “Clinics” menu.' },
-          { name: 'since', label: 'Small tag above the title', type: 'text', placeholder: 'e.g. Since 2018' },
+          { name: 'since', label: 'Small tag above the title', type: 'text', placeholder: 'e.g. Since 2018',
+            hint: 'Leave empty when an accreditation is set below — its emblem is shown instead.' },
+          { name: 'accreditation', label: 'Accreditation', type: 'text', placeholder: 'e.g. NABH Accredited',
+            hint: 'Shown beside the hospital name in its header and above the title on its page.' },
+          { name: 'accreditationLogoUrl', label: 'Accreditation emblem', type: 'image', folder: 'locations',
+            size: '200 × 200 px · PNG with transparent background', hint: 'e.g. the NABH emblem.' },
           { name: 'international', label: 'International centre', type: 'checkbox', default: false, checkboxLabel: 'Yes — outside India',
             hint: 'Adds an “International” badge to its card.' },
         ],
@@ -113,7 +127,7 @@ export const COLLECTIONS = [
           { name: 'description', label: 'About this hospital', type: 'textarea', rows: 5, wide: true,
             placeholder: 'A paragraph introducing the centre — beds, specialities, what makes it special.' },
           { name: 'highlights', label: 'Facilities & highlights', type: 'textarea', rows: 5, wide: true,
-            placeholder: 'Level 3 NICU — five beds, round-the-clock care for premature and high-risk newborns\n125 beds · 25 specialities\n24/7 emergency & pharmacy',
+            placeholder: 'Level 3 NICU — five beds, round-the-clock care for premature and high-risk newborns\n125 beds · 35 specialities\n24/7 emergency & pharmacy',
             hint: 'One per line, shown as a tick-list beside the About text. Add a description after a dash and the name is printed in bold above it.' },
         ],
       },
@@ -137,8 +151,12 @@ export const COLLECTIONS = [
         fields: [
           { name: 'city', label: 'City', type: 'text', placeholder: 'Kochi' },
           { name: 'country', label: 'Country', type: 'text', placeholder: 'India' },
-          { name: 'address', label: 'Address', type: 'textarea', rows: 2, wide: true, placeholder: 'Street, area, city, PIN' },
-          { name: 'phone', label: 'Phone', type: 'text', placeholder: '+91 484 405 4000' },
+          { name: 'address', label: 'Hospital address', type: 'textarea', rows: 2, wide: true, placeholder: 'Street, area, city, PIN' },
+          { name: 'officeAddress', label: 'Office address (optional)', type: 'textarea', rows: 2, wide: true,
+            placeholder: 'Registered / office address, if different',
+            hint: 'Shown under the hospital address in the contact strip and footer.' },
+          { name: 'phone', label: 'Phone', type: 'text', placeholder: '0484 666 00 00' },
+          { name: 'phone2', label: 'Second phone (optional)', type: 'text', placeholder: '+91 97466 00600' },
           { name: 'email', label: 'Email', type: 'text', placeholder: 'contactus@kinderhospital.in' },
           { name: 'mapUrl', label: 'Google Maps link', type: 'text', placeholder: 'https://maps.app.goo.gl/…',
             hint: 'Open the hospital in Google Maps, tap Share and paste the link here.' },
@@ -294,7 +312,7 @@ const REVIEW_SECTION = {
       hint: 'Resolve each point, then clear these notes before publishing. Notes are visible only to staff.' },
   ],
 };
-export const PAGE_CATEGORIES = ['Celebrate Pregnancy', 'Kochi Care', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
+export const PAGE_CATEGORIES = ['Celebrate Pregnancy', 'Kochi Care', 'Kochi Care (linked page)', 'About Us', 'Leadership', 'Facilities', 'Packages', 'Insurance', 'Academics', 'Patient Services', 'Hospitals', 'Home'];
 COLLECTIONS.push({
   key: 'pages', label: 'Content Pages', singular: 'page', icon: 'news', titleField: 'title',
   sections: [
@@ -340,5 +358,11 @@ export const SETTING_FIELDS = [
   { name: 'heroImageUrl', label: 'Hero photo', type: 'image', folder: 'hero', wide: true, size: '1920 × 900 px · wide landscape' },
   ...PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`heroSlide${n}`, `Slider ${label.toLowerCase()}`, 'mother')),
   ...PROMO_SLOTS.flatMap(({ n, label }) => promoFields(`homePromo${n}`, label, 'mother')),
+  { name: 'brandVision', label: 'Vision', type: 'textarea', rows: 2, wide: true },
+  { name: 'brandMission', label: 'Mission', type: 'textarea', rows: 3, wide: true },
+  { name: 'brandValues', label: 'Core values', type: 'textarea', rows: 5, wide: true,
+    placeholder: 'Compassion\nIntegrity\nExcellence\nInnovation\nAccessibility', hint: 'One per line.' },
+  { name: 'brandMark', label: 'What the brand mark means', type: 'textarea', rows: 4, wide: true },
+  { name: 'brandCoreIdea', label: 'Core idea', type: 'text', wide: true, placeholder: 'A caring presence protecting and nurturing life.' },
   { name: 'logoUrl', label: 'Logo', type: 'image', folder: 'corporate', wide: true, size: '400 × 120 px · PNG with transparent background', hint: 'Leave empty to keep the built-in Kinder logo.' },
 ];

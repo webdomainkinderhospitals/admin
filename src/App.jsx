@@ -266,7 +266,7 @@ export default function App() {
           {page === 'dashboard' && <Dashboard goTo={setPage} />}
           {page === 'website-content' && <WebsiteContent goTo={setPage} />}
           {page === 'pregnancy-content' && <WebsiteContent key="pregnancy" goTo={setPage} initialCategory="Celebrate Pregnancy" focusSlugs={['kochi-tharattazhaku', 'kochi-wow-mom']} />}
-          {page === 'birthing-content' && <WebsiteContent key="birthing" goTo={setPage} initialCategory="Kochi Care" focusSlugs={['kochi-premium-birthing-centre', 'kochi-water-birthing-suite']} />}
+          {page === 'birthing-content' && <WebsiteContent key="birthing" goTo={setPage} initialCategory="" focusSlugs={['kochi-premium-birthing-centre', 'kochi-water-birthing-suite']} />}
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary goTo={setPage} />}
           {page === 'services-doctors' && <ServicesDoctors />}
