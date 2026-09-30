@@ -28,6 +28,11 @@ const SECTIONS = [
     fields: ['siteName', 'tagline', 'helplinePhone', 'emergencyPhone', 'email', 'logoUrl'],
   },
   {
+    title: 'Brand philosophy',
+    hint: 'Vision, mission, core values and the meaning of the Kinder mark, from the brand book. Shown on the About page.',
+    fields: ['brandVision', 'brandMission', 'brandValues', 'brandMark', 'brandCoreIdea'],
+  },
+  {
     title: 'Announcement bar',
     hint: 'A short message strip across the very top of the site. Leave empty to hide it.',
     fields: ['announcement'],

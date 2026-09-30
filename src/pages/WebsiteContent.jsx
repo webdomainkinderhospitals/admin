@@ -67,7 +67,7 @@ export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }
     </section>
     <section className="card kochi-content-guide pregnancy-content-guide">
       <div><span className="review-badge">Kochi website · featured menu</span><h2>Celebrate Pregnancy &amp; Premium Birthing Centre</h2>
-        <p>Tharattazhaku and WOW MOM are in Celebrate Pregnancy. Water Birth and Premium Birthing Centre are in Kochi Care. Each published page appears in the highlighted Kochi website menu.</p>
+        <p>Tharattazhaku and WOW MOM are in Celebrate Pregnancy. Premium Birthing Services is a Kochi Care card; Water Birth is a linked page it points to. Kochi Care pages are the cards on the Kochi home page; “Kochi Care (linked page)” pages stay online and are linked from those cards.</p>
         <p className="muted small">Use the hero photo and gallery URLs in each page's editor. Import new drafts above; resolve review notes and publish each page when approved.</p>
       </div>
       <button className="btn btn-primary" onClick={() => { setCategory('Celebrate Pregnancy'); document.getElementById('content-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Review celebrations →</button>
