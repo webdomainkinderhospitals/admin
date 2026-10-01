@@ -8,6 +8,7 @@ import { WebsiteContent } from './pages/WebsiteContent.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { ServicesDoctors } from './pages/ServicesDoctors.jsx';
 import { HospitalsManager } from './pages/HospitalsManager.jsx';
+import { Bookings } from './pages/Bookings.jsx';
 import { Icon } from './icons.jsx';
 import { ToastHost } from './toast.jsx';
 
@@ -113,6 +114,12 @@ const NAV_GROUPS = [
     ],
   },
   {
+    title: 'Patient requests',
+    items: [
+      { key: 'bookings', label: 'Bookings & Enquiries', icon: 'inbox', desc: 'Appointments & call-backs' },
+    ],
+  },
+  {
     title: 'Website content',
     items: [
       { key: 'settings', label: 'Site Settings', icon: 'settings', desc: 'Hero, logo, contact' },
@@ -157,6 +164,8 @@ export default function App() {
   const [checked, setChecked] = useState(false);
   const [page, setRawPage] = useState('dashboard');
   const [quickOpen, setQuickOpen] = useState(false);
+  // New, unhandled requests — shown as a badge on Bookings & Enquiries.
+  const [newRequests, setNewRequests] = useState(0);
   const setPage = (key) => setRawPage(ALIASES[key] || key);
 
   function quickAdd(item) {
@@ -178,6 +187,16 @@ export default function App() {
     }
     return () => window.removeEventListener('kinder-logout', logout);
   }, []);
+
+  useEffect(() => {
+    if (!user) return undefined;
+    const check = () => api('/api/enquiries?status=new')
+      .then((d) => setNewRequests(d.counts?.new || 0))
+      .catch(() => {});
+    check();
+    const t = setInterval(check, 60000);
+    return () => clearInterval(t);
+  }, [user]);
 
   if (!checked) {
     return (
@@ -214,6 +233,9 @@ export default function App() {
                     <span>{n.label}</span>
                     {n.desc && <small>{n.desc}</small>}
                   </span>
+                  {n.key === 'bookings' && newRequests > 0 && (
+                    <span className="nav-badge" aria-label={`${newRequests} new`}>{newRequests}</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -264,6 +286,7 @@ export default function App() {
         </header>
         <main className="content">
           {page === 'dashboard' && <Dashboard goTo={setPage} />}
+          {page === 'bookings' && <Bookings onCount={setNewRequests} />}
           {page === 'website-content' && <WebsiteContent goTo={setPage} />}
           {page === 'pregnancy-content' && <WebsiteContent key="pregnancy" goTo={setPage} initialCategory="Celebrate Pregnancy" focusSlugs={['kochi-tharattazhaku', 'kochi-wow-mom']} />}
           {page === 'birthing-content' && <WebsiteContent key="birthing" goTo={setPage} initialCategory="" focusSlugs={['kochi-premium-birthing-centre', 'kochi-water-birthing-suite']} />}

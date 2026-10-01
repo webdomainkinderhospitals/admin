@@ -1308,3 +1308,72 @@ input:focus, textarea:focus, select:focus {
 .kochi-content-guide button { flex-shrink: 0; }
 @media (max-width: 700px) { .kochi-content-guide { flex-direction: column; align-items: flex-start; padding: 20px; } }
 .hosp-clinic-badge { top: auto !important; bottom: 10px; background: #0e8c7b !important; color: #fff !important; }
+
+/* ---------- Bookings & Enquiries ---------- */
+.nav-badge {
+  margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px;
+  display: inline-grid; place-items: center; background: #d8232b; color: #fff;
+  font-size: 11.5px; font-weight: 800; box-shadow: 0 2px 6px rgba(216,35,43,.35);
+}
+.bq-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.bq-tab {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  text-align: left; cursor: pointer; font: inherit; color: var(--ink-soft); box-shadow: var(--shadow-1);
+  transition: border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+}
+.bq-tab:hover { border-color: var(--primary); }
+.bq-tab.is-on { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); color: var(--ink); }
+.bq-tab-num { font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1.1; }
+.bq-tab-new .bq-tab-num { color: #d8232b; }
+.bq-tab-confirmed .bq-tab-num { color: var(--success); }
+.bq-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.bq-filters .search-box { max-width: 360px; }
+.bq-filters .search-box input { border: 0; outline: none; background: transparent; padding: 10px 0; width: 100%; font: inherit; }
+.bq-filters select, .bq-status select {
+  min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); font: inherit; color: var(--ink);
+}
+.bq-list { display: grid; gap: 10px; }
+.bq-row {
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow-1);
+}
+.bq-row.bq-new { border-left-color: #d8232b; }
+.bq-row.bq-contacted { border-left-color: var(--warn); }
+.bq-row.bq-confirmed { border-left-color: var(--success); }
+.bq-row.bq-closed { opacity: .82; }
+.bq-main {
+  display: grid; grid-template-columns: 150px minmax(170px, 1fr) minmax(220px, 1.6fr) 130px auto;
+  gap: 14px; align-items: center; padding: 14px 16px;
+}
+.bq-when { display: grid; gap: 4px; }
+.bq-when small { color: var(--muted); font-size: 12px; }
+.bq-type { justify-self: start; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: var(--primary-light); color: var(--primary-dark); }
+.bq-type-appointment { background: #e7eef9; color: #1b3a73; }
+.bq-type-callback { background: #fde8e9; color: #a3151c; }
+.bq-type-feedback { background: var(--warn-soft); color: var(--warn); }
+.bq-who, .bq-what { display: grid; gap: 2px; min-width: 0; }
+.bq-who strong, .bq-what strong { font-size: 14.5px; color: var(--ink); overflow-wrap: anywhere; }
+.bq-phone { font-weight: 700; color: var(--primary); text-decoration: none; }
+.bq-email { font-size: 12.5px; color: var(--ink-soft); overflow-wrap: anywhere; }
+.bq-slot, .bq-hosp { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--ink-soft); }
+.bq-what small { color: var(--muted); }
+.bq-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.bq-detail { padding: 0 16px 16px; display: grid; gap: 12px; border-top: 1px dashed var(--line); padding-top: 14px; }
+.bq-message p { margin: 4px 0 0; white-space: pre-wrap; color: var(--ink); }
+.bq-notes { display: grid; gap: 6px; }
+.bq-notes textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; font: inherit; resize: vertical; }
+.bq-detail-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.bq-delete { margin-left: auto; }
+@media (max-width: 1100px) {
+  .bq-main { grid-template-columns: 1fr 1fr; }
+  .bq-status, .bq-actions { justify-content: flex-start; }
+}
+@media (max-width: 640px) {
+  .bq-tabs { grid-template-columns: repeat(3, 1fr); }
+  .bq-main { grid-template-columns: 1fr; }
+}
+.bq-filters { align-items: center; }
+.bq-filters select { width: auto; min-width: 190px; flex: 0 0 auto; }
+.bq-filters .search-box { flex: 1 1 260px; }
+.bq-actions a { text-decoration: none; }
