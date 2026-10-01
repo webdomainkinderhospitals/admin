@@ -23,6 +23,11 @@ const SECTIONS = [
     fields: PROMO_SLOTS.flatMap(({ n }) => [`homePromo${n}ImageUrl`, `homePromo${n}Link`, `homePromo${n}Alt`]),
   },
   {
+    title: 'Hospital contact numbers (website header)',
+    hint: 'The “Contact a hospital” menu at the top of every page: each hospital’s number and email, with a call-back request. Requests arrive in Bookings & Enquiries.',
+    fields: ['helplineContacts'],
+  },
+  {
     title: 'Brand & contact details',
     hint: 'Used in the header, footer, contact page and chat assistant of every site.',
     fields: ['siteName', 'tagline', 'helplinePhone', 'emergencyPhone', 'email', 'logoUrl'],
