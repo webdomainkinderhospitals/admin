@@ -8,7 +8,7 @@ import { locationLabel } from '../locations.js';
 
 // Generic list + one entry form for a collection (procedures, news, stories…).
 // The form is the shared RecordForm, so every screen looks and behaves alike.
-export function CollectionManager({ config, category = '', focusSlugs = null }) {
+export function CollectionManager({ config, category = '', focusSlugs = null, sourcePages = [] }) {
   const [items, setItems] = useState(null); // null = loading
   const [editing, setEditing] = useState(null); // null | {} (new) | item
   const [query, setQuery] = useState('');
@@ -119,6 +119,17 @@ export function CollectionManager({ config, category = '', focusSlugs = null }) 
 
       {editing && (
         <div ref={formRef}>
+          {config.key === 'pages' && sourcePages.some((page) => page.slug === editing.slug) && <div className="card form-card">
+            <h3>Updated website source content</h3>
+            <p className="muted">Load the supplied source copy into this form for review. This replaces the unsaved title, introduction and body; your existing photographs are retained. Nothing changes online until you save.</p>
+            <button type="button" className="btn" onClick={() => {
+              if (!confirm('Replace the text in this form with the updated source copy? Existing unsaved text edits will be replaced. You can cancel the form to keep the saved page.')) return;
+              const source = sourcePages.find((page) => page.slug === editing.slug);
+              setEditing((current) => ({ ...current, title: source.title, excerpt: source.excerpt, body: source.body,
+                imageUrl: current.imageUrl || source.imageUrl || '', galleryUrls: current.galleryUrls || source.galleryUrls || '',
+                sourceFiles: source.sourceFiles, reviewNotes: source.reviewNotes, published: false }));
+            }}>Load source copy for review</button>
+          </div>}
           <RecordForm
             sections={config.sections}
             value={editing}
