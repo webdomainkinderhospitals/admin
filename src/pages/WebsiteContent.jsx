@@ -1,10 +1,11 @@
+import MaternityHomepageEditor from './MaternityHomepageEditor';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { COLLECTIONS, PAGE_CATEGORIES } from '../collections';
 import { CollectionManager } from './CollectionManager';
 import { clearSpecialityCache } from '../fields';
 
-export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }) {
+export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null, homepageSection = '' }) {
   const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -28,6 +29,7 @@ export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }
   }
   const pending = preview?.items.filter((r) => r.action === 'create').length || 0;
   return <div className="page content-library">
+    {homepageSection && <MaternityHomepageEditor key={homepageSection} section={homepageSection} />}
     <section className="card content-intro">
       <div className="content-intro-copy">
         <span className="review-badge">Website content collection</span>
@@ -67,7 +69,7 @@ export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }
     </section>
     <section className="card kochi-content-guide pregnancy-content-guide">
       <div><span className="review-badge">Kochi website · featured menu</span><h2>Celebrate Pregnancy &amp; Premium Birthing Centre</h2>
-        <p>Tharattazhaku and WOW MOM are in Celebrate Pregnancy. Premium Birthing Services is a Kochi Care card; Water Birth is a linked page it points to. Kochi Care pages are the cards on the Kochi home page; “Kochi Care (linked page)” pages stay online and are linked from those cards.</p>
+        <p>Celebrate Pregnancy and Premium Birthing Centre have separate sections on the main and Kochi homepages. Use their sidebar menus to manage each section. Programme titles, introductions, hero photographs and galleries come from the published pages below.</p>
         <p className="muted small">Use the hero photo and gallery URLs in each page's editor. Import new drafts above; resolve review notes and publish each page when approved.</p>
       </div>
       <button className="btn btn-primary" onClick={() => { setCategory('Celebrate Pregnancy'); document.getElementById('content-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Review celebrations →</button>
@@ -75,6 +77,6 @@ export function WebsiteContent({ goTo, initialCategory = '', focusSlugs = null }
     <div className="content-section-filter"><label htmlFor="content-category">Content section</label>
       <select id="content-category" value={category} onChange={(e) => setCategory(e.target.value)}><option value="">All sections</option>{PAGE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
     </div>
-    <CollectionManager key={revision} config={COLLECTIONS.find((c) => c.key === 'pages')} category={category} focusSlugs={category === initialCategory ? focusSlugs : null} />
+    <CollectionManager key={revision} config={COLLECTIONS.find((c) => c.key === 'pages')} category={category} focusSlugs={category === initialCategory ? focusSlugs : null} sourcePages={preview?.items.filter((item) => item.proposedPage).map((item) => item.proposedPage) || []} />
   </div>;
 }
