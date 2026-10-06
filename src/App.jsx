@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard.jsx';
 import { ServicesDoctors } from './pages/ServicesDoctors.jsx';
 import { HospitalsManager } from './pages/HospitalsManager.jsx';
 import { Bookings } from './pages/Bookings.jsx';
+import { GalleryManager } from './pages/GalleryManager.jsx';
 import { Icon } from './icons.jsx';
 import { ToastHost } from './toast.jsx';
 
@@ -127,6 +128,7 @@ const NAV_GROUPS = [
       { key: 'website-content', label: 'Content Library', icon: 'news', desc: 'Pages & supplied content' },
       { key: 'pregnancy-content', label: 'Celebrate Pregnancy', icon: 'heart', desc: 'Kochi events & pregnancy club' },
       { key: 'birthing-content', label: 'Premium Birthing Centre', icon: 'building', desc: 'Kochi birthing & water birth' },
+      { key: 'gallery', label: 'Gallery', icon: 'image', desc: 'Photos & videos' },
       navItem('procedures', 'Treatments'),
       navItem('news', 'Posts & camps'),
       navItem('testimonials', 'Patient stories'),
@@ -153,6 +155,7 @@ const QUICK_ADDS = [
   { key: 'procedures', label: 'Add procedure', icon: 'activity', openForm: true },
   { key: 'hospitals', label: 'Add hospital', icon: 'building' },
   { key: 'media', label: 'Upload photos', icon: 'upload' },
+  { key: 'gallery', label: 'Add to Gallery', icon: 'image' },
 ];
 
 const TITLES = Object.fromEntries(
@@ -292,6 +295,7 @@ export default function App() {
           {page === 'birthing-content' && <WebsiteContent key="birthing" homepageSection="birthing" goTo={setPage} initialCategory="" focusSlugs={['kochi-premium-birthing-centre', 'kochi-water-birthing-suite']} />}
           {page === 'settings' && <SettingsPage />}
           {page === 'media' && <MediaLibrary goTo={setPage} />}
+          {page === 'gallery' && <GalleryManager />}
           {page === 'services-doctors' && <ServicesDoctors />}
           {page === 'hospitals' && <HospitalsManager goTo={setPage} />}
           {COLLECTIONS.filter((c) => LIST_PAGES.includes(c.key)).map((c) => page === c.key && <CollectionManager key={c.key} config={c} />)}
