@@ -352,7 +352,7 @@ export const SETTING_FIELDS = [
   { name: 'siteName', label: 'Site name', type: 'text', placeholder: 'Kinder Hospitals' },
   { name: 'tagline', label: 'Tagline', type: 'text', placeholder: 'Kindness at the heart of every tiny heartbeat.', hint: 'Shown in the footer under the logo.' },
   { name: 'helplineContacts', label: 'Hospital contact numbers', type: 'textarea', rows: 5, wide: true,
-    placeholder: 'Kinder Hospitals Kochi | +91 97466 00600 | contactus@kinderkochi.com',
+    placeholder: 'Kinder Hospitals Kochi | 0484 666 0000 | contactus@kinderkochi.com',
     hint: 'One hospital per line: Name | Phone | Email. Shown in the website header under “Contact a hospital”; each has a call-back request that arrives in Bookings & Enquiries.' },
   { name: 'helplinePhone', label: '24/7 helpline number', type: 'text', placeholder: '+91 80 2888 8880' },
   { name: 'emergencyPhone', label: 'Emergency number', type: 'text', placeholder: '+91 8618 999 833' },
