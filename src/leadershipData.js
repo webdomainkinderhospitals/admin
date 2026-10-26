@@ -1,0 +1,24 @@
+export const LEADERSHIP_PRESET = [
+  {
+    id: 'chairman-pradeep-kumar',
+    name: 'Dr V. K. Pradeep Kumar',
+    role: 'Chairman, Kinder Hospitals',
+    department: 'Leadership',
+    bio: 'Dr V. K. Pradeep Kumar brings more than 37 years of experience in Paediatrics and Neonatology, with a distinguished career spanning India, Ireland and Singapore.',
+    fullBio: 'Dr V. K. Pradeep Kumar brings more than 37 years of experience in Paediatrics and Neonatology, with a distinguished career spanning India, Ireland and Singapore. A paediatrician and neonatologist, he has been associated with clinical practice, research and publications in Paediatrics, Neonatology and Obstetrics over four decades.\n\nHis experience across different healthcare systems shaped a clear conviction: quality healthcare should not be a privilege determined by geography or the ability to pay. It was this belief that led him to bring international experience and standards of care closer to home, while keeping them accessible to families in India.\n\nAs Chairman of Kinder Hospitals, Dr Pradeep Kumar has guided the organisation’s growth and long-term direction, with a particular focus on women’s and children’s healthcare. At the heart of his vision is a simple but powerful principle: no woman should be denied necessary healthcare because she cannot afford it. Kinder’s mission reflects this commitment by seeking to provide high-quality, personalised and comprehensive care at a cost that remains accessible to all sections of society.\n\nFor him, healthcare is also about changing how families experience some of life’s most important moments. Pregnancy, in particular, should be a time of anticipation, confidence and joy, not fear shaped by the cost or availability of care. Kinder’s emphasis on celebrating pregnancy is an expression of that belief.\n\nFrom its beginnings in Singapore to its growing presence in India, Kinder represents Dr Pradeep Kumar’s vision of bringing together international expertise, modern medicine and compassionate care, while remaining firmly rooted in the communities it serves.\n\nHis vision is ultimately simple: world-class healthcare should be within reach of every woman and every child, and every family should be able to welcome a new life with dignity, confidence and hope.',
+    imageUrl: '',
+    sortOrder: 1,
+    published: true,
+  },
+  {
+    id: 'ceo-renjith-krishnan',
+    name: 'Renjith Krishnan',
+    role: 'Chief Executive Officer & Managing Director, Kinder Hospitals',
+    department: 'Leadership',
+    bio: 'Renjith Krishnan brings more than 20 years of experience in hospital management and healthcare business operations, with expertise in strategic planning, hospital administration, operational management, systems development and healthcare business growth.',
+    fullBio: 'Renjith Krishnan brings more than 20 years of experience in hospital management and healthcare business operations, with expertise in strategic planning, hospital administration, operational management, systems development and healthcare business growth.\n\nAs Chief Executive Officer and Managing Director of Kinder Hospitals, he has played a central role in translating the organisation’s vision into a scalable and sustainable healthcare platform. Under his leadership, Kinder has grown from two centres to five hospitals and one clinic within four years, while establishing the systems and operating frameworks required to manage a rapidly expanding network.\n\nHis leadership impact has been particularly evident in building standardised processes across hospitals, strengthening operational controls, developing strategic business units and creating management systems that support consistency as the organisation grows. His focus on performance, resource utilisation and process discipline has helped Kinder expand without losing sight of quality, patient experience and financial sustainability.\n\nRather than viewing growth simply as an increase in the number of hospitals, Renjith has focused on building the organisational infrastructure behind that growth — putting in place people, processes, systems and accountability that allow each centre to operate effectively while maintaining common standards across the Group.\n\nHis career includes leadership roles at Rajagiri Hospital, Kinder Women’s Hospital & Fertility Centre, Manipal Hospital and Aravind Eye Hospital. He has also contributed to the wider healthcare sector through his association with CAHO and AHPI.\n\nAt Kinder, his focus remains on building an organisation capable of growing with discipline and purpose: expanding access to specialised women’s and children’s healthcare, strengthening operational excellence, and ensuring that growth translates into consistently high standards of care for patients and their families.',
+    imageUrl: '',
+    sortOrder: 2,
+    published: true,
+  },
+];
