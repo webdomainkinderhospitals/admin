@@ -256,7 +256,7 @@ export const COLLECTIONS = [
         title: 'Post',
         fields: [
           { name: 'title', label: 'Title', type: 'text', required: true, wide: true, placeholder: 'Free paediatric health camp — 12 September' },
-          { name: 'category', label: 'Type', type: 'select', options: ['News', 'Event', 'Camp'] },
+          { name: 'category', label: 'Type', type: 'select', options: ['News', 'Event', 'Camp', 'Award', 'Community'] },
           { name: 'publishedAt', label: 'Date', type: 'date', hint: 'Newest first on the website.' },
           { name: 'excerpt', label: 'Short summary', type: 'textarea', rows: 2, wide: true,
             placeholder: 'One or two sentences shown on the news card.' },
@@ -265,10 +265,12 @@ export const COLLECTIONS = [
         ],
       },
       {
-        title: 'Cover photo',
+        title: 'Photos',
         fields: [
           { name: 'imageUrl', label: 'Cover photo', type: 'image', folder: 'news', wide: true,
             size: '1200 × 675 px · landscape', hint: 'Posts without a cover show as text-only cards.' },
+          { name: 'galleryUrls', label: 'More photos from the story', type: 'textarea', rows: 5, wide: true,
+            hint: 'One image URL per line. Upload photographs in Media Library (folder News), then paste their URLs here. The story page shows them as a photo gallery.' },
         ],
       },
       {
