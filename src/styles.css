@@ -1438,3 +1438,14 @@ input:focus, textarea:focus, select:focus {
 .gallery-yt { width: min(520px, 100%); }
 .gallery-yt-body { padding: 4px 22px 22px; }
 .gallery-yt-preview { display: block; width: 100%; max-width: 320px; margin-top: 10px; border-radius: 10px; }
+
+/* Services & Doctors → a hospital tab → Arrange doctors */
+.sd-order { border-color: var(--primary); }
+.sd-order-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.sd-order-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.sd-order-row.is-off { opacity: 0.65; }
+.sd-order-row > img, .sd-order-row .sd-doctor-noimg { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: top; flex: 0 0 40px; display: grid; place-items: center; background: var(--primary-light); color: var(--primary); }
+.sd-order-num { width: 56px; height: 38px; text-align: center; font-size: 16px; font-weight: 700; border: 1px solid var(--line); border-radius: 8px; font-family: inherit; color: var(--primary-dark); background: var(--surface); }
+.sd-order-num:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+.sd-order-move { display: flex; gap: 4px; }
+.sd-order-actions { margin-top: 16px; display: flex; gap: 10px; }

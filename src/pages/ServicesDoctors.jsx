@@ -6,6 +6,7 @@ import { RecordForm, clearSpecialityCache } from '../fields.jsx';
 import { Icon } from '../icons.jsx';
 import { toast } from '../toast.jsx';
 import { inScope, atLocation, locationsOf, locationLabel } from '../locations.js';
+import { DoctorOrder } from './DoctorOrder.jsx';
 
 // The one screen for the care offering — every speciality and every doctor.
 //   Corporate website tab — the four service groups shown on /services and in
@@ -29,6 +30,7 @@ export function ServicesDoctors() {
   const [error, setError] = useState('');
   const [form, setForm] = useState(null); // { kind:'doctor'|'spec', anchor, value }
   const [busy, setBusy] = useState(false);
+  const [arranging, setArranging] = useState(false); // the hospital's doctor order panel
   const [formError, setFormError] = useState('');
   const formRef = useRef();
 
@@ -189,11 +191,11 @@ export function ServicesDoctors() {
   return (
     <div className="page">
       <div className="sd-tabs" role="tablist">
-        <button role="tab" aria-selected={scope === ''} className={`sd-tab${scope === '' ? ' active' : ''}`} onClick={() => { setScope(''); close(); }}>
+        <button role="tab" aria-selected={scope === ''} className={`sd-tab${scope === '' ? ' active' : ''}`} onClick={() => { setScope(''); close(); setArranging(false); }}>
           <Icon name="globe" size={15} /> Corporate website
         </button>
         {locs.map((l) => (
-          <button key={l.id} role="tab" aria-selected={scope === l.name} className={`sd-tab${scope === l.name ? ' active' : ''}`} onClick={() => { setScope(l.name); close(); }}>
+          <button key={l.id} role="tab" aria-selected={scope === l.name} className={`sd-tab${scope === l.name ? ' active' : ''}`} onClick={() => { setScope(l.name); close(); setArranging(false); }}>
             <Icon name="building" size={14} /> {l.name}
           </button>
         ))}
@@ -217,11 +219,22 @@ export function ServicesDoctors() {
             <Icon name="search" size={15} />
             <input type="search" placeholder="Search doctors or specialities…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search doctors or specialities" />
           </div>
+          {scope !== '' && (
+            <button className="btn" onClick={() => { close(); setArranging((a) => !a); }} aria-expanded={arranging}>
+              <Icon name="list" size={15} /> Arrange doctors
+            </button>
+          )}
           <button className="btn btn-primary" onClick={() => { close(); openDoctorForm(null, '', 'top'); }}>
             <Icon name="plus" size={15} /> Add doctor
           </button>
         </div>
       </div>
+
+      {arranging && scope !== '' && (
+        <DoctorOrder key={scope} hospital={scope} docs={docs}
+          onSaved={(saved) => setDocs((rows) => rows.map((r) => saved.find((s) => s.id === r.id) || r))}
+          onClose={() => setArranging(false)} />
+      )}
 
       {renderForm('top')}
 
