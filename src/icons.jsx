@@ -62,6 +62,7 @@ const PATHS = {
     </>
   ),
   plus: <path d="M12 5v14m-7-7h14" />,
+  list: <path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" />,
   pencil: (
     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
   ),
